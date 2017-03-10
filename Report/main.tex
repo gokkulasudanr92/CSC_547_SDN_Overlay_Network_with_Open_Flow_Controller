@@ -1,0 +1,122 @@
+\documentclass{article}
+
+\usepackage[pdftex]{graphicx}
+\usepackage{float}
+
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+\title{SDN Overlay Network with VCL and \\Open vSwitch}
+\date{\today}
+%Add your name in place of your handle
+\author{Team 9 \\Kushagra Mishra : Lead\\
+B Shravan Achar : Vice Lead \\ Yogesh Lele \\ Muchen Zhang \\ Gokkulasudan Rathnakumar\\ NC State University}
+
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+%TO DO : independent index (aka ToC) (After completion of the report) for pages, graphs, tables
+% list full names of all team members
+\newpage
+
+\section{Abstract}
+%{The infrastructure basically contains compute, storage and networking hardware. ---- Can we add HPC compute nodes as well}
+Apache VCL is an open-source system used to dynamically provision and broker remote access to a dedicated compute environment for an end-user \cite{vcl}. Setting up and maintaining VCL for a large institution like NCSU, requires large scale infrastructure. The infrastructure basically contains compute, storage and networking hardware. Managing a large virtual environment at scale grows in complexity as demand for VCL services increase. SDN helps network administrators to easily configure networking devices in a dynamic environment, where requirements are changed on a regular basis. Currently, VCL uses Linux bridges over KVM to communicate between VMs. The project aims to replace this infrastructure and use Open vSwitch(OVS) instead. With OVS running on all networking devices, it will be possible to control them using a SDN controller. This will ease the process of configuring multiple networking devices.
+
+%Guys, we should add this below section
+
+
+\section{Introduction}
+
+
+\section{Requirements}
+\subsection{Functional Requirements}
+\begin{enumerate}
+    \item To replace the Linux bridge with open vSwitch on KVM inside a VCL Sandbox 2.4.2. After the bridge has been replaced, VCL should be able to provision VMs on the hypervisor, as it did before changing to Open vSwitch. Also, the networking changes should be persistent across reboots.
+
+    \item To replicate the environment mentioned above on another VCL sandbox. 
+    
+    \item To establish a tunnel between the sandboxes running open vswitches and setup a private network (VxLan or Geneve tunnelling protocol).
+
+    \item The management node (VCL Sandbox) of one VCL sandbox (master) should be able to provision VMs on all such sandboxes (slaves) over the earlier described private network. For this, a single common DHCP server running on the master sandbox must be used to provide IP addresses to VMs on all sandboxes. Users must still be able to connect to a reserved VM on any sandbox, as it did before the tunnel was established. 
+    
+    \item To reconfigure the VCL sandboxes to use a single NAT host, preferably on the master sandbox. Thus, users should be able to connect to VMs on either host. However, all connections should be made through the public IP of only one host.
+
+    
+    
+    % After completing step 1, you will have a single sandbox working that is using
+    % Open vSwitch.  So, what will be the other endpoint for the tunnel described in
+    % step 2?  You need to move part of what you have in step 3 to before step 2
+    % (the part about replicating the environment).
+    
+    % You will need to modify DHCP for the private network.
+    
+    % Also, note that at this point you should have replaced both bridges in the
+    % sandboxes with Open vSwitches, but you are only establishing a tunnel for the
+    % private network.
+
+        
+    \item To install a SDN controller on one of the sandboxes and police the traffic over this private network.
+    \item To provide succinct documentation/scripts needed to replicate the configuration. This documentation should be complete enough that a VCL administrator can replicate the setup without having to do additional research on what commands to run and how to configure things. 
+    
+\end{enumerate}
+
+\subsection{Non-Functional Requirements}
+    \item To analyze and mitigate known vulnerabilities and threats introduced by the migration to OvS.
+    \item To analyze performance of the entire system after introducing SDN / OvS.
+    \item To analyze scaling issues introduced by OvS and tunneling. 
+    % Use of single NAT also limits scalability (port number / FDs). NAT host is overloaded, which might limit scalability
+    % Possible solutions - Use load balancer infront of a NAT. Distributed NAT service.
+    
+\section{System Environment}
+\section{Design}
+\section{Implementation}
+\section{Results}
+\section{Verification and Validation}
+\section{Schedule and Personnel}
+%{Configuring Open vSwitch with the help of pm modules}
+%{DHCP configuration}
+%{NAT Host Configuration}
+%{Floodlight Setup}
+%{VxLan Setup to allow tunnelling}
+%{Documetation}
+
+\begin{center}
+ \begin{tabular}{||c | c | c ||} 
+ \hline
+ Task & Owner & Backup \\ [2ex] 
+ \hline\hline
+  Configuring Open vSwitch & Kushagra & Yogesh  \\
+  \hline
+  Establish tunnel between VCL Sandbox(VxLan) & Shravan & Gokkul  \\ 
+  \hline
+  Replicate Open vSwitch environment in another sandbox & Gokkul & Muchen  \\ 
+  \hline
+  Configure all hosts in VxLan to use a single NAT & Muchen & Kushagra  \\ 
+  \hline
+  Configure all hosts in VxLan to use a single DHCP & Yogesh & Shravan  \\ 
+  \hline
+    Installing floodlight controller and integrating it with VCL & Yogesh & Kushagra  \\ 
+ \hline
+\end{tabular}
+\end{center}
+
+%Things to be added 
+\section{Appendix}
+\subsection{Terminology}
+\begin{enumerate}
+    \item VM - Virtual Machine
+    \item KVM - Kernel Virtual Machine
+    \item SDN - Software Defined Networking
+    \item VCL - Virtual Computing Lab
+    \item OVS - Open vSwitch
+    \item NAT - Network Address Translation
+    \item Sandbox - Virtual Computing Lab Sandbox
+\end{enumerate}
+
+\bibliographystyle{ieeetr}
+\bibliography{main}
+
+\end{document}
