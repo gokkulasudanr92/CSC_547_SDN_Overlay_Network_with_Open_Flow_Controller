@@ -17,7 +17,8 @@ B Shravan Achar : Vice Lead \\ Yogesh Lele \\ Muchen Zhang \\ Gokkulasudan Rathn
 
 \maketitle
 \tableofcontents
-%TO DO : independent index (aka ToC) (After completion of the report) for pages, graphs, tables
+%TODO : independent index (aka ToC) (After completion of the report) for pages, graphs, tables.
+%TODO : Each section of a new page after the completion of the report.
 % list full names of all team members
 \newpage
 
@@ -38,13 +39,12 @@ Apache VCL is an open-source system used to dynamically provision and broker rem
 
     \item To replicate the environment mentioned above on another VCL sandbox. 
     
-    \item To establish a tunnel between the sandboxes running open vswitches and setup a private network (VxLan or Geneve tunnelling protocol).
+    \item To establish a tunnel between the sandboxes running Open VSwitch and setup a private network using either VxLan or Geneve tunnelling protocol.
 
-    \item The management node (VCL Sandbox) of one VCL sandbox (master) should be able to provision VMs on all such sandboxes (slaves) over the earlier described private network. For this, a single common DHCP server running on the master sandbox must be used to provide IP addresses to VMs on all sandboxes. Users must still be able to connect to a reserved VM on any sandbox, as it did before the tunnel was established. 
+    \item The management node on one VCL sandbox (master) should be able to provision VMs on all such sandboxes (slaves) over the earlier described private network. For this, a single common DHCP server running on the master sandbox must be used to provide IP addresses to VMs on all sandboxes. Users must still be able to connect to a reserved VM on any sandbox, as they did before the tunnel was established.
     
     \item To reconfigure the VCL sandboxes to use a single NAT host, preferably on the master sandbox. Thus, users should be able to connect to VMs on either host. However, all connections should be made through the public IP of only one host.
 
-    
     
     % After completing step 1, you will have a single sandbox working that is using
     % Open vSwitch.  So, what will be the other endpoint for the tunnel described in
@@ -58,15 +58,18 @@ Apache VCL is an open-source system used to dynamically provision and broker rem
     % private network.
 
         
-    \item To install a SDN controller on one of the sandboxes and police the traffic over this private network.
-    \item To provide succinct documentation/scripts needed to replicate the configuration. This documentation should be complete enough that a VCL administrator can replicate the setup without having to do additional research on what commands to run and how to configure things. 
+    \item To install a SDN controller on one of the sandboxes to orchestrate Open VSwitches on all the sandboxes and police the traffic over the private network.
     
 \end{enumerate}
 
 \subsection{Non-Functional Requirements}
-    \item To analyze and mitigate known vulnerabilities and threats introduced by the migration to OvS.
-    \item To analyze performance of the entire system after introducing SDN / OvS.
-    \item To analyze scaling issues introduced by OvS and tunneling. 
+    \begin{enumerate}
+        \item To analyze and mitigate known vulnerabilities and threats introduced by the migration to OvS.
+        \item To analyze performance of the entire system after introducing SDN / OvS.
+        \item To analyze scaling issues introduced by OvS and tunneling.
+        \item To provide succinct documentation/scripts needed for a VCL administrator to replicate these setups without having to do additional research on what commands to run and how to configure things. 
+    
+    \end{enumerate}
     % Use of single NAT also limits scalability (port number / FDs). NAT host is overloaded, which might limit scalability
     % Possible solutions - Use load balancer infront of a NAT. Distributed NAT service.
     
