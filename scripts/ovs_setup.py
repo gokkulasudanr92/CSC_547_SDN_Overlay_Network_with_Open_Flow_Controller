@@ -3,7 +3,7 @@
 import subprocess
 import os
 
-def install_require_packages: 
+def install_require_packages(): 
 	
 	req_packages = ['gcc', 'make', 'python-devel', \
 					'openssl-devel', 'kernel-devel', 'graphviz', 
@@ -63,6 +63,6 @@ if __name__ == "__main__":
 	# Add two bridges 
 	create_ovs_network("private")
 
-	
+
 
 
