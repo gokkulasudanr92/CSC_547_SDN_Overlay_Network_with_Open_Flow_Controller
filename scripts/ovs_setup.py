@@ -51,7 +51,11 @@ def install_ovs_packages():
 	for cmd in cmd_list:
 	 	subprocess.call(cmd)
 
-# def create_backup(network):
+def create_backup(network):
+	cmd_backup = ['virsh', 'net-dumpxml', network, '>', \
+				'/tmp/original_' + network + '_config.xml']
+
+	subprocess.call(create_backup)
 
 def ovs_xml_config(file, network, bridge):
 	file = open(file, 'w+')
@@ -79,11 +83,11 @@ def add_new_bridge(bridge):
 	cmd_new_bridge = ['ovs-vsctl', 'add-br', bridge]
 	subprocess.call(cmd_new_bridge)
 
-def create_ovs_network(network):
-	destroy_old_network("private")
-	ovs_xml_config("/tmp/new_config.xml", network, "ovsbr0")
-	add_new_bridge("ovsbr0")
-	start_new_network(network, "/tmp/new_config.xml")
+def create_ovs_network(network, network_config_path, bridge):
+	destroy_old_network(network)
+	ovs_xml_config(network_config_path, network, bridge)
+	add_new_bridge(bridge)
+	start_new_network(network, network_config_path)
 
 if __name__ == "__main__":
 
@@ -95,7 +99,7 @@ if __name__ == "__main__":
 	install_ovs_packages()
 
 	# Add two bridges 
-	# create_ovs_network("private")
+	# create_ovs_network("private", "/tmp/net.xml", "ovsbr0")
 
 
 
