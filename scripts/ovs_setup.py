@@ -20,18 +20,18 @@ def add_new_user(user_name):
 # Installation instrcutions source:
 # https://n40lab.wordpress.com/2015/06/28/centos-7-installing-openvswitch-2-3-2-lts/
 def install_ovs_packages():
-	# run_as_ovs = ['runuser', '-l', 'ovs', '-c']
+	run_as_ovs = ['runuser', '-l', 'ovs', '-c']
 	
-	# cmd_mk_ovs_dir = ['mkdir -p ~/rpmbuild/SOURCES']
-	# cmd_fetch_ovs = ['wget http://openvswitch.org/releases/openvswitch-2.5.2.tar.gz']
-	# cmd_cp_ovs_tar = ['cp openvswitch-2.5.2.tar.gz ~/rpmbuild/SOURCES/']
-	# cmd_untar_ovs = ['tar xfz openvswitch-2.5.2.tar.gz']
-	# cmd_rpmbuild = ['rpmbuild -bb --nocheck openvswitch-2.5.2/rhel/openvswitch.spec']
+	cmd_mk_ovs_dir = ['mkdir -p ~/rpmbuild/SOURCES']
+	cmd_fetch_ovs = ['wget http://openvswitch.org/releases/openvswitch-2.5.2.tar.gz']
+	cmd_cp_ovs_tar = ['cp openvswitch-2.5.2.tar.gz ~/rpmbuild/SOURCES/']
+	cmd_untar_ovs = ['tar xfz openvswitch-2.5.2.tar.gz']
+	cmd_rpmbuild = ['rpmbuild -bb --nocheck openvswitch-2.5.2/rhel/openvswitch.spec']
 	
-	# cmd_list = [cmd_mk_ovs_dir, cmd_fetch_ovs, cmd_cp_ovs_tar, cmd_untar_ovs, cmd_rpmbuild]
+	cmd_list = [cmd_mk_ovs_dir, cmd_fetch_ovs, cmd_cp_ovs_tar, cmd_untar_ovs, cmd_rpmbuild]
 
-	# for cmd in cmd_list:
-	# 	subprocess.call(run_as_ovs + cmd)
+	for cmd in cmd_list:
+		subprocess.call(run_as_ovs + cmd)
 
 	# create ovs config directory
 	cmd_config_dir = ['mkdir', '/etc/openvswitch']
@@ -39,8 +39,13 @@ def install_ovs_packages():
 	cmd_start_ovs_service = ['systemctl', 'start', 'openvswitch.service']
 	cmd_enable_ovs_onboot = ['chkconfig', 'openvswitch', 'on']
 
+	# create ovs config directory
+	subprocess.call(cmd_config_dir)
+
+	# Install openvswitch rpm
 	p = Popen(cmd_install_rpm, stdin=PIPE, stderr=PIPE)
 	stdout_data = p.communicate(input='y')[0]
+	
 	cmd_list = [cmd_start_ovs_service, cmd_enable_ovs_onboot]
 
 	for cmd in cmd_list:
@@ -83,9 +88,9 @@ def create_ovs_network(network):
 if __name__ == "__main__":
 
 	# Install Open vSwtich
-	# install_required_packages()
+	install_required_packages()
 
-	# add_new_user("ovs")
+	add_new_user("ovs")
 
 	install_ovs_packages()
 
