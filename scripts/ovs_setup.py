@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # Run the script as root
+from subprocess import Popen, PIPE, STDOUT
 import subprocess
 import os
 
@@ -38,12 +39,12 @@ def install_ovs_packages():
 	cmd_start_ovs_service = ['systemctl', 'start', 'openvswitch.service']
 	cmd_enable_ovs_onboot = ['chkconfig', 'openvswitch', 'on']
 
-	p = Popen(cmd_install_rpm, stdout=PIPE, stdin=PIPE, stderr=PIPE)
+	p = Popen(cmd_install_rpm, stdin=PIPE, stderr=PIPE)
 	stdout_data = p.communicate(input='y')[0]
-	# cmd_list = [cmd_config_dir, cmd_install_rpm, cmd_start_ovs_service, cmd_enable_ovs_onboot]
+	cmd_list = [cmd_start_ovs_service, cmd_enable_ovs_onboot]
 
-	# for cmd in cmd_list:
-	# 	subprocess.call(cmd, STD)
+	for cmd in cmd_list:
+	 	subprocess.call(cmd)
 
 # def create_backup(network):
 
