@@ -31,14 +31,14 @@ def ovs_xml_config(file, network, bridge):
 
 
 def install_ovs_packages():
-	run_as_ovs = ['su', '-', 'ovs', '-c']
+	run_as_ovs = ['runuser', '-l', 'ovs', '-c']
 	
 	# cmd_mk_ovs_dir = run_as_ovs + ['mkdir', '-p', '~/rpmbuild/SOURCES']
 	cmd_fetch_ovs = run_as_ovs + ['wget','http://openvswitch.org/releases/openvswitch-2.5.2.tar.gz']
 	cmd_untar_ovs = run_as_ovs + ['tar', 'xfz', 'openvswitch-2.5.2.tar.gz']
 	cmd_rpmbuild = run_as_ovs + ['rpmbuild', '-bb', '--nocheck', 'openvswitch-2.5.2/rhel/openvswitch.spec']
 	
-	cmd_list = [cmd_mk_ovs_dir, cmd_fetch_ovs, cmd_untar_ovs, cmd_rpmbuild]
+	cmd_list = [cmd_fetch_ovs, cmd_untar_ovs, cmd_rpmbuild]
 
 	for cmd in cmd_list: 
 		subprocess.call(cmd)
