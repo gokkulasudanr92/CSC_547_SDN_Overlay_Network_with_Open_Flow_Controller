@@ -77,14 +77,18 @@ def start_new_network(network, network_config_path):
 	cmd_define = ['virsh', 'net-define', network_config_path]
 	cmd_autostart = ['virsh', 'net-autostart', network]
 	cmd_start = ['virsh', 'net-start', network]
-	subprocess.call(cmd_destroy)
+	
+	cmd_list = [cmd_define, cmd_autostart, cmd_start]
+	
+	for cmd in cmd_list:
+		subprocess.call(cmd)
 
 def add_new_bridge(bridge):
 	cmd_new_bridge = ['ovs-vsctl', 'add-br', bridge]
 	subprocess.call(cmd_new_bridge)
 
 def create_ovs_network(network, network_config_path, bridge):
-	destroy_old_network(network)
+	# destroy_old_network(network)
 	ovs_xml_config(network_config_path, network, bridge)
 	add_new_bridge(bridge)
 	start_new_network(network, network_config_path)
