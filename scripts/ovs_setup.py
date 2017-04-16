@@ -89,17 +89,26 @@ def create_ovs_network(network, network_config_path, bridge):
 	add_new_bridge(bridge)
 	start_new_network(network, network_config_path)
 
+def change_firewall_rules(config_firewall_path):
+	cmd_replace_virbr_to_ovsbr = ['sed', '-i.bak', 's/virbr/ovsbr/g', config_firewall_path]
+	subprocess.call(cmd_replace_virbr_to_ovsbr)
+
+
 if __name__ == "__main__":
 
 	# Install Open vSwtich
-	install_required_packages()
+	# install_required_packages()
 
-	add_new_user("ovs")
+	# add_new_user("ovs")
 
-	install_ovs_packages()
+	# install_ovs_packages()
 
-	# Add two bridges 
-	# create_ovs_network("private", "/tmp/net.xml", "ovsbr0")
+	# Add two bridges
+	create_ovs_network("private", "/etc/libvirt/qemu/networks/private.xml", "ovsbr0")
+
+	create_ovs_network("nat", "/etc/libvirt/qemu/networks/nat.xml", "ovsbr1")
+
+	change_firewall_rules("/etc/sysconfig/iptables")
 
 
 
