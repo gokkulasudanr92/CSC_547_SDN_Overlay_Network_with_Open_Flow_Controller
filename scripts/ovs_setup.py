@@ -57,8 +57,8 @@ def create_backup(network):
 
 	subprocess.call(create_backup)
 
-def ovs_xml_config(file, network, bridge):
-	file = open(file, 'w+')
+def ovs_xml_config(file_path, network, bridge):
+	file = open(file_path, 'w+')
 	file.write("<network>\n")
 	file.write("<name>%s</name>\n" % network)
 	file.write("<forward mode='bridge'/>\n")
@@ -95,12 +95,44 @@ def create_ovs_network(network, network_config_path, bridge, bridge_ip):
 	destroy_old_network(network)
 	ovs_xml_config(network_config_path, network, bridge)
 	add_new_bridge(bridge)
-	start_new_network(network, network_config_path)
 	assign_bridge_ip(bridge, bridge_ip)
+	start_new_network(network, network_config_path)
+
 
 def change_firewall_rules(config_firewall_path):
 	cmd_replace_virbr_to_ovsbr = ['sed', '-i.bak', 's/virbr/ovsbr/g', config_firewall_path]
 	subprocess.call(cmd_replace_virbr_to_ovsbr)
+
+def new_dhcp_conf(network, bridge):
+	# file path
+	base_dir = "/var/lib/libvirt/dnsmasq/"
+	file_path = base_dir + network + ".conf"
+
+	if(network == "nat"):
+		dhcp_range = "192.168.200.128,192.168.200.254"
+	else:
+		dhcp_range = "192.168.100.128,192.168.100.254"
+
+	file = open(file_path, 'w+')
+
+	file.write("strict-order\n")
+	file.write("domain=%s\n" % network)
+	file.write("expand-hosts\n")
+	file.write("pid-file=%s\n" % (base_dir + network + ".pid"))
+	file.write("except-interface=lo\n")
+	file.write("bind-dynamic\n")
+	file.write("interface=%s\n" % bridge)
+
+	if(network == "private"):
+		file.write("dhcp-option=3\n")
+
+	file.write("dhcp-range=%s\n" % dhcp_range)
+	file.write("dhcp-no-override\n")
+	file.write("dhcp-lease-max=127\n")
+	file.write("dhcp-hostsfile=%s\n" % (base_dir + network + ".hostsfile"))
+	file.write("addn-hosts=%s" % (base_dir + network + ".addnhosts"))
+	file.close()
+
 
 if __name__ == "__main__":
 
