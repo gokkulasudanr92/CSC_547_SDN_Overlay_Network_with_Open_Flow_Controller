@@ -137,18 +137,46 @@ def new_dhcp_conf(network, bridge):
 	file.write("addn-hosts=%s" % (base_dir + network + ".addnhosts"))
 	file.close()
 
+def new_dhcp_hostsfile(network):
+	base_dir = "/var/lib/libvirt/dnsmasq/"
+	file_path = base_dir + network + ".hostsfile"
+
+	file = open(file_path, 'w+')
+	if(network == "nat"):
+		file.write("52:54:00:3d:85:f0,192.168.200.1")
+	else:
+		file.write("52:54:00:b8:33:d4,192.168.100.1")
+		file.write("52:54:00:ae:cf:00,192.168.100.101")
+		file.write("52:54:00:ae:cf:02,192.168.100.102")
+		file.write("52:54:00:ae:cf:04,192.168.100.103")
+		file.write("52:54:00:ae:cf:06,192.168.100.104")
+	file.close()
+
+def new_dhcp_addnhosts(network):
+	base_dir = "/var/lib/libvirt/dnsmasq/"
+	file_path = base_dir + network + ".addnhosts"
+	cmd_create_new_addnhosts_file = ['touch', file_path]
+	subprocess.call(cmd_create_new_addnhosts_file)
+
 def load_new_dhcp_config(network, bridge):
 	base_dir = "/var/lib/libvirt/dnsmasq/"
-	pid = open((base_dir + network + ".pid"), "r").read().strip()
+	# pid = open((base_dir + network + ".pid"), "r").read().strip()
 
-	cmd_kill_dnsmasq = ['kill', '-9', pid]
+	# cmd_kill_dnsmasq = ['kill', '-9', pid]
 
 	cmd_start_dnsmasq = ['/sbin/dnsmasq', ('--conf-file=%s' % (base_dir + network + ".conf")),
 						('--log-facility=%s' % (base_dir + network + ".log"))]
 
-	cmd_list = [cmd_kill_dnsmasq, cmd_start_dnsmasq]
+	cmd_list = [cmd_start_dnsmasq]
 	for cmd in cmd_list:
 		subprocess.call(cmd)
+
+def configure_dhcp(network, bridge)
+	new_dhcp_conf(network, bridge)
+	new_dhcp_hostsfile(network)
+	new_dhcp_addnhosts(network)
+	load_new_dhcp_config(network, bridge)
+
 
 if __name__ == "__main__":
 
@@ -169,30 +197,21 @@ if __name__ == "__main__":
 
 	# args = parser.parse_args()
 
-
-
-
 	# Install Open vSwtich
-	install_ovs_required_packages()
+	# install_ovs_required_packages()
 
-	add_new_user("ovs")
+	# add_new_user("ovs")
 
-	install_ovs_packages()
+	# install_ovs_packages()
 
-	# Create ovs bridge network
-	create_ovs_network("private", "/etc/libvirt/qemu/networks/private.xml", \
-						"ovsbr0", "192.168.100.10")
+	# # Create ovs bridge network
+	# create_ovs_network("private", "/etc/libvirt/qemu/networks/private.xml", \
+	# 					"ovsbr0", "192.168.100.10")
 
-	create_ovs_network("nat", "/etc/libvirt/qemu/networks/nat.xml", \
-						"ovsbr1", "192.168.200.10")
+	# create_ovs_network("nat", "/etc/libvirt/qemu/networks/nat.xml", \
+	# 					"ovsbr1", "192.168.200.10")
 
-	change_firewall_rules("/etc/sysconfig/iptables")
+	# change_firewall_rules("/etc/sysconfig/iptables")
 
-	new_dhcp_conf("private", "ovsbr0")
-	new_dhcp_conf("nat", "ovsbr1")
-
-	load_new_dhcp_config("private", "ovsbr0")
-	load_new_dhcp_config("nat", "ovsbr1")
-
-
-
+	configure_dhcp("private", "ovsbr0")
+	configure_dhcp("nat", "ovsbr1")
