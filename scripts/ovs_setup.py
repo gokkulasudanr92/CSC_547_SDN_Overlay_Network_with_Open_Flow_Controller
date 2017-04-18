@@ -171,7 +171,7 @@ def load_new_dhcp_config(network, bridge):
 	for cmd in cmd_list:
 		subprocess.call(cmd)
 
-def configure_dhcp(network, bridge)
+def configure_dhcp(network, bridge):
 	new_dhcp_conf(network, bridge)
 	new_dhcp_hostsfile(network)
 	new_dhcp_addnhosts(network)
