@@ -3,8 +3,11 @@
 from subprocess import Popen, PIPE, STDOUT
 import subprocess
 import os
+import argparse
+import sys
 
-def install_required_packages():
+
+def install_ovs_required_packages():
 	
 	req_packages = ['gcc', 'make', 'python-devel', \
 					'openssl-devel', 'kernel-devel', 'graphviz', 
@@ -51,6 +54,7 @@ def install_ovs_packages():
 	for cmd in cmd_list:
 	 	subprocess.call(cmd)
 
+# Backup config can be found under /tmp/
 def create_backup(network):
 	cmd_backup = ['virsh', 'net-dumpxml', network, '>', \
 				'/tmp/original_' + network + '_config.xml']
@@ -133,11 +137,43 @@ def new_dhcp_conf(network, bridge):
 	file.write("addn-hosts=%s" % (base_dir + network + ".addnhosts"))
 	file.close()
 
+def load_new_dhcp_config(network, bridge):
+	base_dir = "/var/lib/libvirt/dnsmasq/"
+	pid = open((base_dir + network + ".pid"), "r").read().strip()
+
+	cmd_kill_dnsmasq = ['kill', '-9', pid]
+
+	cmd_start_dnsmasq = ['/sbin/dnsmasq', ('--conf-file=%s' % (base_dir + network + ".conf")),
+						('--log-facility=%s' % (base_dir + network + ".log"))]
+
+	cmd_list = [cmd_kill_dnsmasq, cmd_start_dnsmasq]
+	for cmd in cmd_list:
+		subprocess.call(cmd)
 
 if __name__ == "__main__":
 
+	# Argument parsing
+	# parser = argparse.ArgumentParser()
+
+	# # argument definitions
+	# parser.add_argument("-d", "--default", help="Installs OvS and \
+	# 					replaces private and nat networks with new OvS bridges.",
+ #                    action="store_true")
+
+	# parser.add_argument("-i", "--install", help="Fetches required \
+	# 								packages for OvS and installs it.", action="store_true")
+
+	# # Print help if no arguments are passed
+	# if len(sys.argv)==1:
+	#     parser.print_help()
+
+	# args = parser.parse_args()
+
+
+
+
 	# Install Open vSwtich
-	install_required_packages()
+	install_ovs_required_packages()
 
 	add_new_user("ovs")
 
@@ -152,6 +188,11 @@ if __name__ == "__main__":
 
 	change_firewall_rules("/etc/sysconfig/iptables")
 
+	new_dhcp_conf("private", "ovsbr0")
+	new_dhcp_conf("nat", "ovsbr1")
+
+	load_new_dhcp_config("private", "ovsbr0")
+	load_new_dhcp_config("nat", "ovsbr1")
 
 
 
