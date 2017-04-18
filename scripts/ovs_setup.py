@@ -107,6 +107,9 @@ def change_firewall_rules(config_firewall_path):
 	cmd_replace_virbr_to_ovsbr = ['sed', '-i.bak', 's/virbr/ovsbr/g', config_firewall_path]
 	subprocess.call(cmd_replace_virbr_to_ovsbr)
 
+	cmd_restart_ip_tables = ['service', 'iptables', 'restart']
+	subprocess.call(cmd_restart_ip_tables)
+
 def new_dhcp_conf(network, bridge):
 	# file path
 	base_dir = "/var/lib/libvirt/dnsmasq/"
@@ -198,21 +201,21 @@ if __name__ == "__main__":
 
 	# args = parser.parse_args()
 
-	# Install Open vSwtich
-	# install_ovs_required_packages()
+	#Install Open vSwtich
+	install_ovs_required_packages()
 
-	# add_new_user("ovs")
+	add_new_user("ovs")
 
-	# install_ovs_packages()
+	install_ovs_packages()
 
-	# # Create ovs bridge network
-	# create_ovs_network("private", "/etc/libvirt/qemu/networks/private.xml", \
-	# 					"ovsbr0", "192.168.100.10")
+	# Create ovs bridge network
+	create_ovs_network("private", "/etc/libvirt/qemu/networks/private.xml", \
+						"ovsbr0", "192.168.100.10")
 
-	# create_ovs_network("nat", "/etc/libvirt/qemu/networks/nat.xml", \
-	# 					"ovsbr1", "192.168.200.10")
+	create_ovs_network("nat", "/etc/libvirt/qemu/networks/nat.xml", \
+						"ovsbr1", "192.168.200.10")
 
-	# change_firewall_rules("/etc/sysconfig/iptables")
+	change_firewall_rules("/etc/sysconfig/iptables")
 
 	configure_dhcp("private", "ovsbr0")
 	configure_dhcp("nat", "ovsbr1")
