@@ -110,6 +110,7 @@ def change_firewall_rules(config_firewall_path):
 def new_dhcp_conf(network, bridge):
 	# file path
 	base_dir = "/var/lib/libvirt/dnsmasq/"
+	base_dir_pid = "/var/lib/libvirt/network/"
 	file_path = base_dir + network + ".conf"
 
 	if(network == "nat"):
@@ -122,7 +123,7 @@ def new_dhcp_conf(network, bridge):
 	file.write("strict-order\n")
 	file.write("domain=%s\n" % network)
 	file.write("expand-hosts\n")
-	file.write("pid-file=%s\n" % (base_dir + network + ".pid"))
+	file.write("pid-file=%s\n" % (base_dir_pid + network + ".pid"))
 	file.write("except-interface=lo\n")
 	file.write("bind-dynamic\n")
 	file.write("interface=%s\n" % bridge)
