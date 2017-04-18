@@ -134,7 +134,7 @@ def new_dhcp_conf(network, bridge):
 	file.write("dhcp-no-override\n")
 	file.write("dhcp-lease-max=127\n")
 	file.write("dhcp-hostsfile=%s\n" % (base_dir + network + ".hostsfile"))
-	file.write("addn-hosts=%s" % (base_dir + network + ".addnhosts"))
+	file.write("addn-hosts=%s\n" % (base_dir + network + ".addnhosts"))
 	file.close()
 
 def new_dhcp_hostsfile(network):
@@ -143,13 +143,13 @@ def new_dhcp_hostsfile(network):
 
 	file = open(file_path, 'w+')
 	if(network == "nat"):
-		file.write("52:54:00:3d:85:f0,192.168.200.1")
+		file.write("52:54:00:3d:85:f0,192.168.200.1\n")
 	else:
-		file.write("52:54:00:b8:33:d4,192.168.100.1")
-		file.write("52:54:00:ae:cf:00,192.168.100.101")
-		file.write("52:54:00:ae:cf:02,192.168.100.102")
-		file.write("52:54:00:ae:cf:04,192.168.100.103")
-		file.write("52:54:00:ae:cf:06,192.168.100.104")
+		file.write("52:54:00:b8:33:d4,192.168.100.1\n")
+		file.write("52:54:00:ae:cf:00,192.168.100.101\n")
+		file.write("52:54:00:ae:cf:02,192.168.100.102\n")
+		file.write("52:54:00:ae:cf:04,192.168.100.103\n")
+		file.write("52:54:00:ae:cf:06,192.168.100.104\n")
 	file.close()
 
 def new_dhcp_addnhosts(network):
