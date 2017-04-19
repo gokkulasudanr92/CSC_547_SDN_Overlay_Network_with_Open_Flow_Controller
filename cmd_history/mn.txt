@@ -1,0 +1,33 @@
+    1  rm .bash_history 
+    2  shutdown -h now
+    3  exit
+    4  vi /etc/hosts
+    5  vi /etc/ssh/sshd_config
+    6  vi ~/.ssh/config 
+    7  ssh master
+    8  ssh slave
+    9  ssh master
+   10  ifconfig | less
+   11  exit
+   12  tail -f /var/log/vcld.log 
+   13  ssh vm1-3
+   14  ifconfig
+   15  ifconfig eth0 mtu 1400
+   16  tail -f /var/log/vcld.log 
+   17  ssh vm1-3
+   18  exit
+   19  ssh vm1-2
+   20  ssh vm1-3
+   21  traceroute google.com
+   22  ping -R  google.com
+   23  yum install traceroute 
+   24  traceroute google.com
+   25  exit
+   26  ssh vm1-3
+   27  ssh vm1-3 /var/log/vcld.log 
+   28  tail -f vm1-3 /var/log/vcld.log 
+   29  ssh vm1-3
+   30  ifconfig
+   31  ssh vm1-3
+   32  exit
+   33  history > mn.txt

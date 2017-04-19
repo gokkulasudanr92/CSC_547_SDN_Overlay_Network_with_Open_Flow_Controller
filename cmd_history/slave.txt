@@ -1,0 +1,122 @@
+    1  cd /root
+    2  rm .bash_history 
+    3  exit
+    4  yum install git 
+    5  cd
+    6  git clone https://github.ncsu.edu/kmishra/csc_547_sdn.git
+    7  cd csc_547_sdn/
+    8  ls
+    9  cd scripts/
+   10  ls
+   11  vi ovs_setup.py o
+   12  vi ovs_setup.py
+   13  ./ovs_setup.py 
+   14  ifconfig
+   15  ifconfig | less
+   16  ifconfig
+   17  arp -e
+   18  virsh shutdown managementnode
+   19  virsh start managementnode
+   20  ovs-vsctl add-port ovsbr0 tun0 -- set interface tun0 type=vxlan options:remote_ip=10.25.5.108 options:key=123
+   21  arp -e
+   22  ping 192.168.200.11
+   23  ping 192.168.200.10
+   24  ovs-vsctl show
+   25  ifconfig
+   26  ifconfig | less
+   27  ovs-vsctl show
+   28  ovs-vsctl del-port tun0
+   29  ovs-vsctl add-port ovsbr0 tun0 -- set interface tun0 type=vxlan options:remote_ip=10.25.5.18 options:key=123
+   30  ifconfig
+   31  ifconfig
+   32  tcpdump -i vxlan_sys_4789
+   33  ifconfig
+   34  ifconfig ovsbr0 192.168.100.10
+   35  tcpdump -i vxlan_sys_4789
+   36  tcpdump -i eth0
+   37  ifconfig 
+   38  tcpdump -i vxlan_sys_4789
+   39  ovs-vsctl show
+   40  ifconfig
+   41  ifconfig ovsbr1 192.168.200.10
+   42  ifconfig | less
+   43  ovs-vsctl del-port tun0
+   44  ovs-vsctl add-port ovsbr1 tun0 -- set interface tun0 type=vxlan options:remote_ip=152.46.18.240 options:key=123
+   45  ping 192.168.200.11
+   46  ping 152.46.18.240
+   47  ifconfig | less
+   48  ovs-vsctl show
+   49  ifconfig | less
+   50  vi /etc/sysconfig/iptables
+   51  service iptables restart 
+   52  vi /etc/sysconfig/iptables
+   53  service iptables restart 
+   54  cd /etc/ssh/
+   55  ls
+   56  vi /etc/sysconfig/iptables
+   57  ovs-vsctl add-port ovsbr0 tun1 -- set interface tun1 type=vxlan options:remote_ip=152.46.18.240 options:key=100
+   58  ping 192.168.100.10
+   59  ping 192.168.100.11
+   60  ping -R 192.168.100.11
+   61  vi /etc/sysconfig/iptables
+   62  service iptables restart 
+   63  vi /etc/ssh/hostonly_sshd_config 
+   64  ps aux | grep sshd
+   65  kill -9 12734 && /usr/sbin/sshd -D -f /etc/ssh/hostonly_sshd_config
+   66  ps aux | grep sshd
+   67  ps aux | grep sshd
+   68  /usr/sbin/sshd -D -f /etc/ssh/hostonly_sshd_config
+   69  ps aux | grep sshd
+   70  vi /var/log/messages
+   71  service hostonly_sshd restart 
+   72  ps aux | grep sshd
+   73  ps aux | grep sshd
+   74  ps aux | grep sshd
+   75  service status
+   76  service hostonly_sshd status
+   77  vi /etc/ssh/hostonly_sshd_config
+   78  systemctl restart hostonly_sshd.service 
+   79  service hostonly_sshd status
+   80  vi /var/log/messages
+   81  systemctl stop  hostonly_sshd.service 
+   82  systemctl status hostonly_sshd.service 
+   83  systemctl start hostonly_sshd.service 
+   84  systemctl status hostonly_sshd.service 
+   85  /usr/sbin/sshd -f /etc/ssh/hostonly_sshd_config
+   86  ps aux | grep sshd
+   87  /usr/sbin/sshd -d -f /etc/ssh/hostonly_sshd_config
+   88  ifconfig
+   89  vi /etc/ssh/hostonly_sshd_config 
+   90  /usr/sbin/sshd -D -f /etc/ssh/hostonly_sshd_config
+   91  systemctl restart hostonly_sshd.service 
+   92  ps aux | grep sshd
+   93  vi /etc/sysconfig/iptables
+   94  service iptables restart
+   95  hostnamectl set-hostname slave
+   96  hostname
+   97  exit
+   98  vi /etc/bashrc
+   99  exit 
+  100  exit
+  101  virsh list
+  102  ssh mn
+  103  virsh destroy manaementnode
+  104  virsh destroy managementnode
+  105  ssh mn
+  106  ssh mn
+  107  ping mn
+  108  virsh list
+  109  ifconfig ovsbr0 mtu 1400
+  110  ifconfig 
+  111  ssh mn
+  112  ssh mn
+  113  ifconfig | less
+  114  ssh mn
+  115  virsh list
+  116  ssh mn
+  117  ps aux | grep dnsmasq
+  118  kill -9 48554
+  119  kill -9 48558
+  120  ssh mn
+  121  ssh mn
+  122  history > slave.txt

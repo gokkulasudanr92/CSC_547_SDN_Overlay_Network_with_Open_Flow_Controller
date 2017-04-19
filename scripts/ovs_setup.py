@@ -210,10 +210,10 @@ if __name__ == "__main__":
 
 	# Create ovs bridge network
 	create_ovs_network("private", "/etc/libvirt/qemu/networks/private.xml", \
-						"ovsbr0", "192.168.100.10")
+						"ovsbr0", "192.168.100.11")
 
 	create_ovs_network("nat", "/etc/libvirt/qemu/networks/nat.xml", \
-						"ovsbr1", "192.168.200.10")
+						"ovsbr1", "192.168.200.11")
 
 	change_firewall_rules("/etc/sysconfig/iptables")
 
