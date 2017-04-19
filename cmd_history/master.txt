@@ -1,0 +1,161 @@
+    1  cd /root
+    2  rm .bash_history 
+    3  exit
+    4  ovs-vsctl del tun0
+    5  ovs-vsctl del-port tun0
+    6  ovs-vsctl show
+    7  exit
+    8  yum install git 
+    9  cd
+   10  git clone https://github.ncsu.edu/kmishra/csc_547_sdn.git
+   11  git clone https://github.ncsu.edu/kmishra/csc_547_sdn.git
+   12  ls
+   13  cd csc_547_sdn/
+   14  ls
+   15  cd scripts/
+   16  ls
+   17  ./ovs_setup.py 
+   18  iptable -nvL
+   19  iptables -nvL
+   20  arp -e
+   21  ifconfig
+   22  q
+   23  ps aux | grep dnsmasq
+   24  cat /var/lib/libvirt/dnsmasq/private.log
+   25  cat /var/lib/libvirt/dnsmasq/nat.log
+   26  arp -e
+   27  virsh shutdown managementnode
+   28  virsh start managementnode
+   29  ssh mn
+   30  ls
+   31  ovs-vsctl show
+   32  ifconfig
+   33  ps aux | grep dnsmasq
+   34  cat /var/lib/libvirt/dnsmasq/nat.hostsfile 
+   35  cat /var/lib/libvirt/dnsmasq/private.hostsfile 
+   36  clear
+   37  ifconfig
+   38  ifconfig ovsbr0 192.168.100.1
+   39  ifconfig ovsbr0 192.168.100.11
+   40  ifconfig
+   41  ifconfig ovsbr0 192.168.200.11
+   42  ifconfig ovsbr0 192.168.100.11
+   43  ifconfig ovsbr1 192.168.200.11
+   44  ifconfig
+   45  ping mn
+   46  arp -e
+   47  ifconfig
+   48  ifconfig | less
+   49  ovs-vsctl dd 
+   50  ovs-vsctl add-port ovsbr0 tun0 -- set interface tun0 type=vxlan options:remote_ip=10.25.5.108 options:key=123
+   51  ping 10.15.5.108
+   52  ping 10.25.5.108
+   53  ovs-vsctl show
+   54  arp -e
+   55  ifconfig
+   56  ping 192.168.100.10
+   57  ssh
+   58  ifconfig 
+   59  tcpdump -i vxlan_sys_4789
+   60  ifconfig
+   61  ifconfig | less
+   62  tcpdump -i eth0
+   63  ifconfig
+   64  tcpdump -i vxlan_sys_4789
+   65  ovs-vsctl show
+   66  ovs-vsctl show
+   67  ovs-vsctl add-port ovsbr0 tun0 -- set interface tun0 type=vxlan options:remote_ip=10.25.5.20 options:key=123
+   68  ovs-vsctl show
+   69  ifconfig | less
+   70  ifconfig | less
+   71  ifconfig | less
+   72  ping 192.168.100.11
+   73  ifconfig
+   74  ping 192.168.100.11
+   75  ping 192.168.100.11
+   76  ping 192.168.100.11
+   77  ifconfig | less
+   78  ping 192.168.100.10
+   79  ovs-vsctl show
+   80  ifconfig 
+   81  ovs-vsctl del-port tun0
+   82  ovs-vsctl add-port ovsbr1 tun0 -- set interface tun0 type=vxlan options:remote_ip=152.46.20.6 options:key=123
+   83  ifconfig | less
+   84  ovs-vsctl show
+   85  ping 192.168.100.10
+   86  ping 192.168.200.10
+   87  iptables -nvL
+   88  iptables -nvL | less
+   89  vim /etc/sysconfig/iptables
+   90  ifconfig | less
+   91  service iptables restart 
+   92  ifconfig | less
+   93  ping 192.168.200.10
+   94  iptables -nvL
+   95  iptables -nvL | less
+   96  vim /etc/sysconfig/iptables
+   97  service iptables restart 
+   98  ping 192.168.200.10
+   99  ifconfig | less 
+  100  ovs-vsctl show
+  101  ovs-vsctl add-port ovsbr0 tun1 -- set interface tun1 type=vxlan options:remote_ip=152.46.20.6 options:key=100
+  102  ovs-vsctl show
+  103  ssh mn 
+  104  ifconfig 
+  105  vi /etc/ssh/hostonly_sshd_config 
+  106  vi /etc/ssh/hostonly_sshd_config 
+  107  ssh mn
+  108  virsh destroy managementnode 
+  109  virsh start  managementnode 
+  110  ifconfig
+  111  hostnamectl --help
+  112  hostnamectl set-hostname master
+  113  hostname
+  114  exit
+  115  vi ~/.bashrc 
+  116  vi /etc/bashrc
+  117  source ~/.bashrc 
+  118  eit
+  119  exit
+  120  ifconfig
+  121  tcpdump -i vxlan_sys_4789
+  122  tcpdump -i eth0
+  123  tcpdump -i eth0
+  124  tcpdump -i eth0
+  125  ssh mn
+  126  vi /etc/sysconfig/iptables
+  127  virsh destroy managementnode
+  128  virt-edit --help
+  129  virt-edit -a /pools/managementnode/managementnode.qcow2 /etc/sysconfig/iptables 
+  130  virsh start managementnode 
+  131  ssh mn
+  132  virsh destroy  managementnode 
+  133  virsh start managementnode 
+  134  ssh mn
+  135  ifconfig ovsbr0 1400
+  136  ifconfig ovsbr0 mtu 1400
+  137  ifconfig | less
+  138  ifconfig ovsbr0 192.168.100.11
+  139  ifconfig
+  140  ssh mn
+  141  ifconfig
+  142  vi /etc/sysconfig/iptables
+  143  service iptables restart
+  144  vi /etc/ssh/hostonly_sshd_config 
+  145  service hostonly_sshd restart
+  146  ps aux | grep sshd
+  147  ifconfig | less
+  148  vi /root/vcl_web_password 
+  149  ifconfig 
+  150  ifconfig | less
+  151  lscpu
+  152  ssh mn
+  153  ssh mn
+  154  ifconfig
+  155  virsh list
+  156  ps aux | grep dnsmasq
+  157  ssh mn
+  158  ifconfig 
+  159  vi /etc/ssh/hostonly_sshd_config 
+  160  ifconfig | less
+  161  history > master.txt
