@@ -198,6 +198,16 @@ def change_mtu_size(bridge, mtu_size):
 	cmd_change_mtu_size = ['ifconfig', bridge, 'mtu', mtu_size]
 	subprocess.call(cmd_change_mtu_size)
 
+def change_ssh_hostonly_config(bridge_ip)
+	cmd_change_ssh_hostonly_config = ['sed', '-i', ("'s/ListenAddress 192.168.100.10/ListenAddress %s/g'" % bridge_ip),\
+										'/etc/ssh/hostonly_sshd_config']
+	cmd_load_ssh_hostonly_config = ['systemctl', 'restart', 'hostonly_sshd.service']
+
+	cmd_list = [cmd_change_ssh_hostonly_config, cmd_load_ssh_hostonly_config]
+
+	for cmd in cmd_list:
+		subprocess.call(cmd)
+
 if __name__ == "__main__":
 
 	# Argument parsing
