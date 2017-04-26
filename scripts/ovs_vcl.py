@@ -188,6 +188,10 @@ def create_tunnel(remote_ip, tun_tap, bridge):
 						('options:remote_ip=%s' % remote_ip)]
 	subprocess.call(cmd_create_tunnel)
 
+def update_firewall_for_tunnel(remote_ip, port,protocol):
+	cmd_add_firewall_rule_vxlan = ['iptables', '-A', 'INPUT', '-s', \
+								('%s/32' % remote_ip) '-p', protocol, \
+								'-m', protocol, '--dport', port, '-j', 'ACCEPT']
 
 if __name__ == "__main__":
 
@@ -217,10 +221,10 @@ if __name__ == "__main__":
 
 	# Create ovs bridge network
 	create_ovs_network("private", "/etc/libvirt/qemu/networks/private.xml", \
-						"ovsbr0", "192.168.100.11")
+						"ovsbr0", "192.168.100.10")
 
 	create_ovs_network("nat", "/etc/libvirt/qemu/networks/nat.xml", \
-						"ovsbr1", "192.168.200.11")
+						"ovsbr1", "192.168.200.10")
 
 	change_firewall_rules("/etc/sysconfig/iptables")
 
