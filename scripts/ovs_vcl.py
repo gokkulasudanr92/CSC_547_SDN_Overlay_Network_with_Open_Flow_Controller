@@ -189,7 +189,7 @@ def create_tunnel(remote_ip, tun_tap, bridge, key):
 	subprocess.call(cmd_create_tunnel)
 
 def update_firewall_for_tunnel(remote_ip, port,protocol):
-	cmd_add_firewall_rule_vxlan = ['iptables', '-A', 'INPUT', '-s', \
+	cmd_add_firewall_rule_vxlan = ['iptables', '-I', 'INPUT', '-s', \
 								('%s/32' % remote_ip) '-p', protocol, \
 								'-m', protocol, '--dport', port, '-j', 'ACCEPT']
 
