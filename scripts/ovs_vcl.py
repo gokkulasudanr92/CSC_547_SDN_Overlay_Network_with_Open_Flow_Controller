@@ -194,6 +194,10 @@ def update_firewall_for_tunnel(remote_ip, port,protocol):
 								'-m', protocol, '--dport', port, '-j', 'ACCEPT']
 	subprocess.call(cmd_add_firewall_rule_vxlan)
 
+def change_mtu_size(bridge, mtu_size):
+	cmd_change_mtu_size = ['ifconfig', bridge, 'mtu', mtu_size]
+	subprocess.call(cmd_change_mtu_size)
+
 if __name__ == "__main__":
 
 	# Argument parsing
