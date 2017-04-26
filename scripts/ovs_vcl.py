@@ -181,6 +181,13 @@ def configure_dhcp(network, bridge):
 	new_dhcp_addnhosts(network)
 	load_new_dhcp_config(network, bridge)
 
+# http://costiser.ro/2016/07/07/overlay-tunneling-with-openvswitch-gre-vxlan-geneve-greoipsec/#.WPWEgVMrLwe
+def create_tunnel(remote_ip, tun_tap, bridge):
+	cmd_create_tunnel = ['ovs-vsctl', 'add-port', bridge, tun_if, \
+						'--', 'set', 'interface', tun_tap, 'type=vxlan' \
+						('options:remote_ip=%s' % remote_ip)]
+	subprocess.call(cmd_create_tunnel)
+
 
 if __name__ == "__main__":
 
