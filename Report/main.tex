@@ -9,69 +9,55 @@
 \usepackage{float}
 \usepackage{longtable}
 
+
 \title{\textbf{SDN Overlay Network with VCL and \\Open vSwitch}}
 \date{\today}
 %Add your name in place of your handle
 \author{\textbf{Team 9} \\Kushagra Mishra : Lead\\
-B Shravan Achar : Vice Lead \\ Yogesh Lele \\ Muchen Zhang \\ Gokkulasudan Rathnakumar\\ \textit{North Carolina State University}}
+B Shravan Achar : Vice Lead \\ Yogesh Lele \\ Muchen Zhang \\ Gokkulasudan Rathnakumar\\ \textbf{Computer Science Department} \\\textbf{NC State University}}
 
 
 \begin{document}
 
 \maketitle
 \pagebreak
+
+%TODO : independent index (aka ToC) (After completion of the report) for pages, graphs, tables.
+%TODO : Each section of a new page after the completion of the report.
+% list full names of all team members
+\newpage         
+
+\section{Abstract}
+%{The infrastructure basically contains compute, storage and networking hardware. ---- Can we add HPC compute nodes as well}
+Apache Virtual Computing Lab (VCL) is an open-source system used to dynamically provision and broker remote access to a dedicated compute environment for an end-user \cite{vcl}\cite{schaffer2009ncsu}. Setting up and maintaining VCL for a large institution like NCSU, requires large scale infrastructure. The infrastructure basically contains compute, storage and networking hardware. Managing a large virtual environment at scale grows in complexity as demand for VCL services increase. Software-defined networking (SDN) helps network administrators to easily configure networking devices in a dynamic environment, where requirements are changed on a regular basis. Currently, VCL uses Linux bridges over Kernel-based Virtual Machine (KVM) to communicate between VMs. The project aims to replace this infrastructure and use Open vSwitch(OVS) instead. With OVS running on all networking devices, it will be possible to control them using a SDN controller. This will ease the process of configuring multiple networking devices.
+
+\pagebreak
 \tableofcontents
 \pagebreak
 \listoffigures
 \listoftables
-%TODO : independent index (aka ToC) (After completion of the report) for pages, graphs, tables.
-%TODO : Each section of a new page after the completion of the report.
-% list full names of all team members
-\newpage
-
-\section{Abstract}
-%{The infrastructure basically contains compute, storage and networking hardware. ---- Can we add HPC compute nodes as well}
-Apache VCL is an open-source system used to dynamically provision and broker remote access to a dedicated compute environment for an end-user \cite{vcl}\cite{schaffer2009ncsu}. Setting up and maintaining VCL for a large institution like NCSU, requires large scale infrastructure. The infrastructure basically contains compute, storage and networking hardware. Managing a large virtual environment at scale grows in complexity as demand for VCL services increase. SDN helps network administrators to easily configure networking devices in a dynamic environment, where requirements are changed on a regular basis. Currently, VCL uses Linux bridges over KVM to communicate between VMs. The project aims to replace this infrastructure and use Open vSwitch(OVS) instead. With OVS running on all networking devices, it will be possible to control them using a SDN controller. This will ease the process of configuring multiple networking devices.
-
+\pagebreak
 %Guys, we should add this below section
 
 \section{Introduction}
-% Apache Virtual Computing Lab (VCL) is a free and open source cloud computing platform which provides custom compute resources on demand to its users \cite{vcl}\cite{schaffer2009ncsu}. The compute environment can vary according to the user's requirement. The VCL platform can accommodate requirements ranging from simple virtual machines to cluster of physical machines running HPC(high performance computing) applications. Using VCL a user can provision several types of computer resources such as bare-metal machines, VMs hosted on hypervisors and traditional lab computers.
+Apache Virtual Computing Lab (VCL) is a free and open source cloud computing platform which provides custom compute resources on demand to its users \cite{vcl}\cite{schaffer2009ncsu}. These compute resources are provisioned to users in a virtualized environment. Virtualized networks or overlay networks are networks built on top of another(physical or virtual) network. Currently, the VCL uses Linux bridges to connect the VMs to the host’s physical networks. This project aims to replace those bridges with Open vSwitches and create an overlay network.
+
+More about Apache VCL can be found in appendix \ref{apachevcl}.
+
+% The compute environment can vary according to the user's requirement. The VCL platform can accommodate requirements ranging from simple virtual machines to cluster of physical machines running HPC(high performance computing) applications. Using VCL a user can provision several types of computer resources such as bare-metal machines, VMs hosted on hypervisors and traditional lab computers.
 
 % The VCL environment also provides a front-end to facilitate the users to make reservations for custom computer resources. 
 
 
-Apache Virtual Computing Lab (VCL) is an open-source implementation of a secure production-level on-demand services-oriented technology for wide-area access to solution based on real and virtualized resources, including computational, storage, networking, and software resources. It offers capabilities that are very flexible and diverse ranging from offering infrastructure-as-a-service, platform-as-a-service, software-as-a-service, also provides applications-as-a-service and more recently cloud-as-a-service and different combinations of those, to individual and group IT services, including HPC services.
-
-The baseline service of VCL is provisiong of bare-metal and virtualized resources and extended services encompass PaaS and SaaS. VCL also allow users to install it and adapt it to their needs. A typical user accesses VCL through a Web interface, which after appropriate authentication and authorization steps, presents the user with a set of menu options. A number of additional VCL management functions are available for users with different levels of administrative privileges. In the Web interface, a user can select a particular environment of interest and request it of a given period of time. The image or image environment is loaded, for the duration requested, on either implicit automatically assisgned resources or on an explicit set of resources. VCL also has a network-oriented API that allows remote applications, middleware, and operating systems to access the same functionality through a publishable service. This allows automatic augmentation of end-user needs and seamless addition of resources provided the end-user platform is configured to do so.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=1\textwidth]{vcl_arch}
-\caption{VCL sandbox with Open vSwitch}
-\label{fig:vclarch}
-\end{figure}
-
-The top-level architecture of VCL is illustrated in \ref{fig:vclarch}. There are seven major groups of components 
-\begin{enumerate}
-    \item end-user access interface
-    \item authentication service
-    \item VCL manager that manages user requests
-    \item VCL database
-    \item node manager that manages local installation resources and loads VCL images
-    \item image repository
-    \item computational, storage, and networking resources
-\end{enumerate}
-
-The VCL architecture abstracts resources at several levels: at the application and OS level via images and hypervisors, at the hardware location level (via VCL manager and nodes), and at the network level (via virtual networks, VLANs, VPNs).
 
 \subsection{Problem Statement}
 
-\textbf{\emph{To create an SDN Overlay Network on VCL Sanboxes using Open vSwitch}}
-\newline
+\textbf{\emph{To create an SDN Overlay Network on VCL Sanboxes using Open vSwitch.}}
+\\
+\\
 The current VCL network architecture faces two major problems:
 \begin{enumerate}
-    \item KVM hypervisors in the VCL infrastructure use linux bridges to connect to guest virtual machines. Use of linux bridges limits flexiblity in network management. In particular, any new service on the linux bridges involves recompiling the bridge module.
+    \item KVM hypervisors in the VCL infrastructure use linux bridges to connect to guest virtual machines. Use of linux bridges limits flexibility in network management. In particular, any new service on the linux bridges involves recompiling the bridge module.
     \item Further, in the current infrastructure, the "management" domain is restricted to a single KVM hypervisor. Virtual machines running on one KVM hypervisor form a local isolated network.
 \end{enumerate}
   %stop writing need to upload who is this ?: This is Shravan.
@@ -100,10 +86,28 @@ In the present VCL environment, suppose a user wants to configure network for 10
 \subsection{Functional Requirements}
 \begin{enumerate}
     \item To replace the Linux bridge with open vSwitch on KVM inside a VCL Sandbox 2.4.2. After the bridge has been replaced, VCL should be able to provision VMs on the hypervisor, as it did before changing to Open vSwitch. Also, the networking changes should be persistent across reboots.
+    \\
+    \textbf{Sub requirements:}
+    \begin{enumerate}   
+        \item Install OvS
+        \item Destroy all active VMs in the sandbox
+        \item Add new OvS bridges for "nat" and "private" network
+        \item Destroy and undefine the previous "nat" and "private" network configuration
+        \item Define and load OvS "nat" and "private" network configuration
+        \item Change firewall rules to allow traffic on OvS brige
+        \item Configures DHCP for "nat" and "private" network
+        
+    \end{enumerate}
 
     \item To replicate the environment mentioned above on another VCL sandbox. 
+    \\
+    \textbf{Sub requirements:}
+    \begin{enumerate}   
+        \item Re-do steps as mentioned in functional-requirement 1.
+        \item Destroy the management node.
+    \end{enumerate}
     
-    \item To establish a tunnel between the sandboxes running Open VSwitch and setup a private network using either VxLan or Geneve tunnelling protocol.
+    \item To establish a tunnel between the sandboxes running Open VSwitch and setup a private network using either VxLan tunnelling protocol.
 
     \item The management node on one VCL sandbox (master) should be able to provision VMs on all such sandboxes (slaves) over the earlier described private network. For this, a single common DHCP server running on the master sandbox must be used to provide IP addresses to VMs on all sandboxes. Users must still be able to connect to a reserved VM on any sandbox, as they did before the tunnel was established.
     
@@ -122,7 +126,7 @@ In the present VCL environment, suppose a user wants to configure network for 10
     % private network.
 
         
-    \item To install a SDN controller on one of the sandboxes to orchestrate Open VSwitches on all the sandboxes and police the traffic over the private and nat networks.
+    \item To install a SDN controller on one of the sandboxes to orchestrate Open vSwitches on all the sandboxes and police the traffic over the private and nat networks.
     
 \end{enumerate}
 
@@ -189,11 +193,12 @@ KVM hypervisors in the current VCL system use linux bridges to communicate to th
     \item Libvirtd does not manage ovs bridges whereas it can manage linux bridges. Ovs bridges will have to be managed manually.
 \end{enumerate}
 
-At the cost of installing and configuring the bridges, OvS improves flexibility and manageability of a virtual environment. These are the reasons why an important design choice in the project was to replace the linux bridges with ovs bridges.
+At the cost of installing and configuring the bridges, OvS improves flexibility and manageability of a virtual environment. These are the reasons why an important design choice in the project was to replace the linux bridges with OvS bridges.
 
-Figure below shows the current sandbox architecture being realised with linux bridges.
+
 \subsection{VCL Sandbox}
 
+Figure \ref{fig:vcllinux} shows the current sandbox architecture being realised with linux bridges.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{vcl_linux_sandbox}
@@ -201,8 +206,7 @@ Figure below shows the current sandbox architecture being realised with linux br
 \label{fig:vcllinux}
 \end{figure}
 
-The sandboxes have one dedicated VM for managing other VMs. This VM called the 'management node' uses the linux bridge to communicate with other VMs.
-The number of nodes that one management node can manage is limited to one host.
+The sandboxes have one dedicated VM for managing other VMs. This VM is called the 'management node' uses the linux bridge to communicate with other VMs. The number of nodes that one management node can manage is limited to one host.
 
 \begin{figure}[H]
 \centering
@@ -211,16 +215,16 @@ The number of nodes that one management node can manage is limited to one host.
 \label{fig:vclovs}
 \end{figure}
 
-The figure shows the linux bridges replaced with Open vSwitch bridges. 
+The figure \ref{fig:vclovs} the linux bridges replaced with Open vSwitch bridges. 
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{vxlan_sandboxes}
 \caption{VxLan tunnel between two VCL Sandbox}
-\label{fig:vlcvxlan}
+\label{fig:vclvxlan}
 \end{figure}
 
-The ovs bridges are interconnected through a VxLan tunnel. A second design choice has been to use a suitable tunneling protocol to interconnect ovs switches
+The ovs bridges are interconnected through a VxLan tunnel \cite{mahalingam2012vxlan}. A second design choice has been to use a suitable tunneling protocol to interconnect OvS switches
 Some of the differences between VxLan and Geneve tunneling protocols are as follows:
 \begin{enumerate}
     \item VxLan is a widely accepted protocol for network virtualization. Most switch hardware vendors support VxLan. 
@@ -229,7 +233,7 @@ Some of the differences between VxLan and Geneve tunneling protocols are as foll
 \end{enumerate}
 Modern data centers include a mix of hypervisor-based virtual machines, bare-metal workloads, and network services. All these components must be able to efficiently process packets and participate in an encapsulation protocol. Due to hardware interoperability and standardization, VxLan is better suited for network virtualization in data center environments
 
-VxLan adds 50 bytes of header to an IP packet. This adds an overhead on applications such as SSH and Telnet where smaller packets are transmitted at short intervals (such as for each key stroke). Since, the interconnections are between two hosts, ssh/telnet use cases are not relevant in the current scenario
+VxLan adds 50 bytes of header to an IP packet. This adds an overhead on applications such as SSH and Telnet where smaller packets are transmitted at short intervals (such as for each key stroke). Since, the interconnections are between two hosts, ssh/telnet use cases are not relevant in the current scenario.
 
 \begin{figure}[H]
 \centering
@@ -238,310 +242,95 @@ VxLan adds 50 bytes of header to an IP packet. This adds an overhead on applicat
 \label{fig:vclconnected}
 \end{figure}
 
-The figure shows an SDN controller managing all the connected sandboxes. The SDN controller is only logically centralized whereas the controller process can run on any machine. Among the various controllers implementing the SDN concept, the choice to use Open Daylight is due to the following points:
+The figure \ref{fig:vclconnected} shows an SDN controller managing all the connected sandboxes. The SDN controller is only logically centralized whereas the controller process can run on any machine. Among the various controllers implementing the SDN concept, the choice to use Open Daylight is due to the following reasons:
 \begin{enumerate}
     \item ODL is free and open source
     \item OpenDaylight project promises to standardize the northbound interface. This enables other controllers can leverage ODL to gain consistency across multiple vendors
-    \item The implementation is enterprise ready. This has been seen in wide deployments of SDN systems with ODL controller such as CableLabs
-    \item ODL design is completely modular. It prrovides support for a wide range of services including NFV and IoT use cases
+    \item The implementation is enterprise ready. This has been seen in wide deployments of SDN systems with ODL controller such as CableLabs.
+    \item ODL design is completely modular. It provides support for a wide range of services including NFV and IoT use cases.
 \end{enumerate}
+
 
 \section{Implementation}
 
-The implementation is broken down into several steps. 
-\subsection{Installing OvS}
+This section describes implementation details of the project. 
 
-\subsubsection{Manual Configuration} \label{man_ovs_install}
-\textit{Fetch packages required by Open vSwitch, Run these commands as root user:}
-\begin{verbatim}
-root \$ yum -y install wget gcc make python-devel openssl-devel
-kernel-devel graphviz kernel-debug-devel autoconf automake 
-rpm-build redhat-rpm-config libtool
-\end{verbatim}
-\noindent
-\textit{Add a new user: }
+\subsection{Installing OvS} \label{master_install_ovs}
 
-\begin{verbatim}
-root \$ adduser ovs
-\end{verbatim}
-\noindent
-\textit{Switch to user ovs:}
-
-\begin{verbatim}
-root \$ su - ovs
-\end{verbatim}
-\noindent
-\textit{As user ovs, generate the rpm file:}
-
-\begin{verbatim}
-ovs \$ mkdir -p ~/rpmbuild/SOURCES
-ovs \$ wget http://openvswitch.org/releases/openvswitch-2.5.2.tar.gz
-ovs \$ cp openvswitch-2.5.2.tar.gz ~/rpmbuild/SOURCES/
-ovs \$ tar xfz openvswitch-2.5.2.tar.gz
-ovs \$ rpmbuild -bb --nocheck openvswitch-2.5.2/rhel/openvswitch.spec
-ovs \$ exit
-\end{verbatim}
+OvS does not come pre-installed with stock Centos 7 machines and needs to be installed manually. There are many resources available online which provide step by step guide to install OvS. We followed one such article to configure OvS in our setup \cite{ovsinstall}. Appendix \ref{ovs_install}, provides details on step by step manual installation of OvS and using a script.
 
 \noindent
-\textit{Create open vSwitch configuration directory, run as root user:}
+There are three main functions which the script performs to install OvS \cite{ovs_script}:
 
-\noindent
-\begin{verbatim}
-root \$ mkdir /etc/openvswitch
-\end{verbatim}
+\begin{enumerate}
+    \item Install required packages for OvS: \textit{install\_ovs\_required\_packages()}
+    \item Add user OvS: \textit{add\_new\_user("ovs")}
+    \item Install OvS Packages: \textit{install\_ovs\_packages()}
+\end{enumerate}
 
-\noindent
-\textit{Install the rpm package}
-\begin{verbatim}
-root \$ yum localinstall /home/ovs/rpmbuild/RPMS/x86_64/openvswitch-2.5.2-1.x86_64.rpm
-\end{verbatim}
 
-\noindent
-\textit{Start Open vSwitch service:}
-\begin{verbatim}
-root \$ systemctl start openvswitch.service
-\end{verbatim}
-
-\noindent
-\textit{Enable Open vSwitch at boot time:}
-\begin{verbatim}
-root \$ chkconfig openvswitch on
-\end{verbatim}
-
-\noindent
-\textit{Check if ovs command line tools are installed:}
-\begin{verbatim}
-root \$ ovs-vsctl --version
-ovs-vsctl (Open vSwitch) 2.5.2
-Compiled Apr 18 2017 00:21:19
-DB Schema 7.12.1
-\end{verbatim}
-
-\subsubsection{Configure using Script}
-Running the following command will install the OvS along with its required packages.
-\begin{verbatim}
-root \$ ovs_vcl.py --install-ovs   
-\end{verbatim}
-
-\noindent
-The script runs all the commands mentioned in section  \ref{man_ovs_install} in the given order.
-\subsection{Configuring OvS for a single VCL Sandbox}
+\subsection{Configuring OvS for master VCL Sandbox} \label{master_configure_vcl}
 To configure Open vSwitch for a single VCL sandbox the following steps need to be followed: 
 \begin{enumerate}
     \item Destroy the old "private" and "nat" bridge networks
     \item Create two new bridges for "private" as "ovsbr0" and "nat" as "ovsbr1"
-    \item Create a new OvS xml configuration file for each "private" and "nat" network
+    \item Create new OvS xml configuration file for each "private" and "nat" network
     \item Add new OvS bridge for both "private" and "nat" network
     \item Assign the network bridges IP 
     \item Define the new "private" and "nat" bridge network using the OvS xml configuration. 
     \item Start the new "private" and "nat" bridge network
-    \item Change firewall rules for the new bridges
-    \item Configure DHCP to use the new bridge
-\end{enumerate}
-\subsubsection{Manual Configuration}
-\noindent
-\textit{Destroy the old "private" and "nat" bridge networks:}
-\begin{verbatim}
-root \$ virsh net-destroy private
-root \$ virsh net-destroy nat
-\end{verbatim}
-
-\noindent
-\textit{Undefine the old "private" and "nat" bridge networks:}
-\begin{verbatim}
-root \$ virsh net-undefine private
-root \$ virsh net-undefine nat
-\end{verbatim}
-
-\noindent
-\textit{Create a new bridge for "private" network:}
-\begin{verbatim}
-root \$ ovs-vsctl add-br ovsbr0
-\end{verbatim}
-
-\noindent
-\textit{Create a new bridge for "nat" network:}
-\begin{verbatim}
-root \$ ovs-vsctl add-br ovsbr1
-\end{verbatim}
-
-
-\noindent
-\textit{Create a new OvS xml configuration file for "private" network:}
-\begin{verbatim}
-<network>
-  <name>private</name>
-  <forward mode='bridge'/>
-  <bridge name='ovsbr0'/>
-  <virtualport type='openvswitch'/>
-</network>
-\end{verbatim}
-
-\noindent
-\textit{Create a new OvS xml configuration file for "nat" network:}
-\begin{verbatim}
-<network>
-  <name>nat</name>
-  <forward mode='bridge'/>
-  <bridge name='ovsbr1'/>
-  <virtualport type='openvswitch'/>
-</network>
-\end{verbatim}
-
-\noindent
-\textit{Assign IP to bridge:}
-\begin{verbatim}
-root \$ ifconfig ovsbr0 192.168.100.10
-root \$ ifconfig ovsbr1 192.168.200.10
-\end{verbatim}
-
-\noindent
-\textit{Define net "private" network:}
-\begin{verbatim}
-root \$ virsh net-define <private_ovs_configuration_file.xml>
-\end{verbatim}
-
-\noindent
-\textit{Define net "nat" network:}
-\begin{verbatim}
-root \$ virsh net-define <nat_ovs_configuration_file.xml>
-\end{verbatim}
-
-\noindent
-\textit{Start new "private" network:}
-\begin{verbatim}
-root \$ virsh net-start private
-\end{verbatim}
-
-
-\noindent
-\textit{Start new "nat" network:}
-\begin{verbatim}
-root \$ virsh net-start nat
-\end{verbatim}
-
-
-\noindent
-\textit{Enable new "private" network on startup:}
-\begin{verbatim}
-root \$ virsh net-autostart private
-\end{verbatim}
-
-\noindent
-\textit{Enable new "nat" network on startup:}
-\begin{verbatim}
-root \$ virsh net-autostart nat
-\end{verbatim}
-
-\subsubsection{Configure using Script}
-To-Do
-\subsection{Configuring DHCP for a single VCL Sandbox}
-To configure a DHCP for a single VCL sandbox the following steps need to be followed:
-\begin{enumerate}
+    \item Change firewall rules for the new bridges (virbr0 $->$ ovsbr0 \& virbr1 $->$ ovsbr0)
+    \item Configuring DHCP for master VCL Sandbox
+    \begin{enumerate}
     \item Define a new DHCP configuration for "nat" and "private" network
     \item Define a new DHCP hostfile for "nat" and "private" network
     \item Define a new DHCP additional hosts file for "nat" and "private" network
     \item Load the DHCP configuration for "nat" and "private" network
+    \end{enumerate}
 \end{enumerate}
 
-\subsubsection{Manual Configuration}
+Appendix \ref{ovs_one_sandbox}, provides details on step by step manual configuration of OvS for a single sandbox.
 
-\noindent
-\textit{Define a new DHCP configuration for "nat" network}
-\begin{verbatim}
-root \$ cat >> /var/lib/libvirt/dnsmasq/nat.conf
-strict-order
-domain=nat
-expand-hosts
-pid-file=/var/lib/libvirt/network/nat.pid
-except-interface=lo
-bind-dynamic
-interface=ovsbr1
-dhcp-range=192.168.200.128,192.168.200.254
-dhcp-no-override
-dhcp-lease-max=127
-dhcp-hostsfile=/var/lib/libvirt/dnsmasq/nat.hostsfile
-addn-hosts=/var/lib/libvirt/dnsmasq/nat.addnhosts
-\end{verbatim}
-Assumptions:
+\subsection{Replicate the setup for slave sandbox} 
+To replicate the setup in slave sandbox, all the steps in section \ref{master_install_ovs} and section \ref{master_configure_vcl}. The following things need to kept in mind while configuring the slave sandbox:
+\begin{itemize}
+    \item DHCP should not be configured. There steps in section \ref{master_configure_vcl}, till item number 8 need to be followed.
+    \item IP address of ovsbr0 and ovsbr1 should be different from master sandbox OvS brige IP address.
+\end{itemize}
+
+\subsection{Configuring VxLan tunnel}
+
+VxLan tunnels need to be configured between the master and slave sandbox to create an overlay network. There are two tunnels which are created for "private" and "nat" network, through the public interface of master and slave sandbox. The following steps need to be followed to configure tunnels for the sandbox:
 \begin{enumerate}
-\item The bridge(interface) associated with "nat" network is "ovsbr1".
-\item The DHCP range available is 192.168.200.128 to 192.168.200.254.
-\item The pid-file, dhcp-hostsfile and addn-hosts are defined at the path mentioned above.
+    \item Set up VxLan tunnel for "nat" network \cite{vxlan}.
+    \item Set up VxLan tunnel for "private" network \cite{vxlan}.
+    \item Add firewall rule in master to allow UDP packet at VxLan tunnel port from slave sandbox.
+    \item Add firewall rule in slave to allow UDP packet at VxLan tunnel port from master sandbox.
+    \item Change MTU size for all the interfaces to 1400.
 \end{enumerate}
+Appendix \ref{vxlan_config}, provides details on step by step manual configuring tunnel between master and slave sandbox.
 
-\noindent
-\textit{Define a new DHCP configuration for "private" network.}
-\begin{verbatim}
-root \$ cat >> /var/lib/libvirt/dnsmasq/private.conf
-strict-order
-domain=private
-expand-hosts
-pid-file=/var/lib/libvirt/network/private.pid
-except-interface=lo
-bind-dynamic
-interface=ovsbr0
-dhcp-option=3
-dhcp-range=192.168.100.128,192.168.100.254
-dhcp-no-override
-dhcp-lease-max=127
-dhcp-hostsfile=/var/lib/libvirt/dnsmasq/private.hostsfile
-addn-hosts=/var/lib/libvirt/dnsmasq/private.addnhosts
-\end{verbatim}
-Assumptions:
+\subsection{Adding slave as a virtual host}
+The management node should be aware that it can provision VMs on another virtual host. To achieve this we need to add a virtual host using the VCL web interface. To add a virtual host the following steps need to be followed:
+
 \begin{enumerate}
-\item The bridge(interface) associated with "private" network is "ovsbr0".
-\item The DHCP range available is 192.168.100.128 to 192.168.100.254.
-\item The pid-file, dhcp-hostsfile and addn-hosts are defined at the path mentioned above.
+    \item Login to VCL web interface (master VCL sandbox management node)
+    \item Go to Manage Computers tab $->$ Add new computer $->$ Add details of the slave sandbox, details in figure \ref{fig:vclvirtualhost}
+    \item Go to virtual host tab $->$ configure host slave $->$ Add vms to the slave, details in figure \ref{fig:vclvm}
+    \item Add firewall rule in slave to allow traffic from masters public IP address.
+    \begin{verbatim}
+    root \$ iptables -I INPUT -s <master_public_ip>/32 \
+    -p tcp --dport 22 -j ACCEPT
+    \end{verbatim}
+    \item Add firewall rule in slave to allow traffic from masters private IP address.
+    \begin{verbatim}
+    root \$ iptables -I INPUT -s <master_private_ip>/32 \
+    -p tcp --dport 22 -j ACCEPT
+    \end{verbatim}
 \end{enumerate}
 
-\noindent
-\textit{Define a new DHCP hostfile for "nat" network}
-\begin{verbatim}
-root \$ cat >> /var/lib/libvirt/dnsmasq/nat.hostsfile
-52:54:00:3d:85:f0,192.168.200.1
-\end{verbatim}
+The steps mentioned above call a SQL procedure, which adds a virtual host in the management node's database \cite{sqlprocedure}.
 
-\noindent
-\textit{Define a new DHCP hostfile for "private" network}
-\begin{verbatim}
-root \$ cat >> /var/lib/libvirt/dnsmasq/private.hostsfile
-52:54:00:b8:33:d4,192.168.100.1
-52:54:00:ae:cf:00,192.168.100.101
-52:54:00:ae:cf:02,192.168.100.102
-52:54:00:ae:cf:04,192.168.100.103
-52:54:00:ae:cf:06,192.168.100.104
-\end{verbatim}
-
-\noindent
-\textit{Define a new DHCP additional hosts file for "nat" network}
-\begin{verbatim}
-root \$ touch /var/lib/libvirt/dnsmasq/nat.addnhosts
-\end{verbatim}
-
-\noindent
-\textit{Define a new DHCP additional hosts file for "private" network}
-\begin{verbatim}
-root \$ touch /var/lib/libvirt/dnsmasq/private.addnhosts
-\end{verbatim}
-
-
-\noindent
-\textit{Load the DHCP configuration for "nat"network}
-\begin{verbatim}
-root \$ /sbin/dnsmasq --conf-file=/var/lib/libvirt/dnsmasq/nat.conf --log-facility=/var/lib/libvirt/dnsmasq/nat.log
-\end{verbatim}
-
-\noindent
-\textit{Load the DHCP configuration for "private"network}
-\begin{verbatim}
-root \$ /sbin/dnsmasq --conf-file=/var/lib/libvirt/dnsmasq/private.conf --log-facility=/var/lib/libvirt/dnsmasq/private.log
-\end{verbatim}
-
-\subsubsection{Configure using Script}
-To-Do
-% \subsection{Configuring VxLan}
-% To-Do
 
 \subsection{Extra Script Features}
 The script provides a default option to configure a single VCL sandbox with OvS switch. It performs the following function:
@@ -595,7 +384,6 @@ To-Do
      4 & Bring down the central DHCP process. Bring down the VMs on both the sandboxes and bring them back up. Collect the output of ifconfig on both VMs & It is expected that no VMs will be assigned IP addresses and collecting ifconfig output would be impossible \\
      \hline
      4 & SSH into the management node of the master sandbox from both master and slave hosts & Since there is only one management node, SSH must take the user (root) to the same VM \\
-      
      \hline
      4 & SSH into the management node of the slave sandbox from both master and slave hosts & Since there is only one management node, SSH into the slave sandbox must fail from both the hosts \\
      \hline 
@@ -711,13 +499,16 @@ To-Do
   \hline
   Configure all hosts in VxLan to use a single DHCP & 04/19/2017 & Completed  \\ 
   \hline
-   Integrating the open daylight controller it with VCL & 04/21/2017 & To-Do  \\ 
+   Integrating the open daylight controller it with VCL & 04/21/2017 & Completed  \\ 
  \hline
  \end{tabular}
 \caption{Milestones}
 \label{table:milestone}
 \end{table}
 \end{center}
+
+\bibliographystyle{ieeetr}
+\bibliography{main}
 
 %Things to be added 
 \section{Appendix}
@@ -748,8 +539,382 @@ To-Do
     A VCL Sandbox is a mini-cloud image containing collection of several VMs pre-configured. It also houses VCL\textquotesingle s Management Node daemon that is responsible for provisioning these VMs.  
     
 \end{enumerate}
+\pagebreak
+\subsection{Apache Virtual Computing Lab} \label{apachevcl}
+Apache VCL is an open-source implementation of a secure production-level on-demand services-oriented technology for wide-area access to solution based on real and virtualized resources, including computational, storage, networking, and software resources. It offers capabilities that are very flexible and diverse ranging from offering infrastructure-as-a-service, platform-as-a-service, software-as-a-service, also provides applications-as-a-service and more recently cloud-as-a-service and different combinations of those, to individual and group IT services, including HPC services.
 
-\bibliographystyle{ieeetr}
-\bibliography{main}
+The baseline service of VCL is provisiong of bare-metal and virtualized resources and extended services encompass PaaS and SaaS. VCL also allow users to install it and adapt it to their needs. A typical user accesses VCL through a Web interface, which after appropriate authentication and authorization steps, presents the user with a set of menu options. A number of additional VCL management functions are available for users with different levels of administrative privileges. In the Web interface, a user can select a particular environment of interest and request it of a given period of time. The image or image environment is loaded, for the duration requested, on either implicit automatically assisgned resources or on an explicit set of resources. VCL also has a network-oriented API that allows remote applications, middleware, and operating systems to access the same functionality through a publishable service. This allows automatic augmentation of end-user needs and seamless addition of resources provided the end-user platform is configured to do so.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{vcl_arch}
+\caption{VCL sandbox with Open vSwitch}
+\label{fig:vclarch}
+\end{figure}
+
+The top-level architecture of VCL is illustrated in figure \ref{fig:vclarch}. There are seven major groups of components:
+\begin{enumerate}
+    \item end-user access interface
+    \item authentication service
+    \item VCL manager that manages user requests
+    \item VCL database
+    \item node manager that manages local installation resources and loads VCL images
+    \item image repository
+    \item computational, storage, and networking resources
+\end{enumerate}
+
+The VCL architecture abstracts resources at several levels: at the application and OS level via images and hypervisors, at the hardware location level (via VCL manager and nodes), and at the network level (via virtual networks, VLANs, VPNs).
+
+\subsection{Implementation Details: Code \& Configuration Instructions}
+
+The section contains code, configuration instructions and other detail relevant to the implementation of the project.
+
+\subsubsection{Installing OvS} \label{ovs_install}
+
+\begin{enumerate}
+    \item \textbf{Manual Configuration}
+    
+\textbf{Fetch packages required by Open vSwitch, Run these commands as root user:}
+\begin{verbatim}
+root \$ yum -y install wget gcc make python-devel openssl-devel
+kernel-devel graphviz kernel-debug-devel autoconf automake 
+rpm-build redhat-rpm-config libtool
+\end{verbatim}
+\noindent
+\textbf{Add a new user: }
+
+\begin{verbatim}
+root \$ adduser ovs
+\end{verbatim}
+\noindent
+\textbf{Switch to user ovs:}
+
+\begin{verbatim}
+root \$ su - ovs
+\end{verbatim}
+\noindent
+\textbf{As user ovs, generate the rpm file:}
+
+\begin{verbatim}
+ovs \$ mkdir -p ~/rpmbuild/SOURCES
+ovs \$ wget http://openvswitch.org/releases/openvswitch-2.5.2.tar.gz
+ovs \$ cp openvswitch-2.5.2.tar.gz ~/rpmbuild/SOURCES/
+ovs \$ tar xfz openvswitch-2.5.2.tar.gz
+ovs \$ rpmbuild -bb --nocheck openvswitch-2.5.2/rhel/openvswitch.spec
+ovs \$ exit
+\end{verbatim}
+
+\noindent
+\textbf{Create open vSwitch configuration directory, run as root user:}
+
+\noindent
+\begin{verbatim}
+root \$ mkdir /etc/openvswitch
+\end{verbatim}
+
+\noindent
+\textbf{Install the rpm package}
+\begin{verbatim}
+root \$ yum localinstall /home/ovs/rpmbuild/RPMS/x86_64/openvswitch-2.5.2-1.x86_64.rpm
+\end{verbatim}
+
+\noindent
+\textbf{Start Open vSwitch service:}
+\begin{verbatim}
+root \$ systemctl start openvswitch.service
+\end{verbatim}
+
+\noindent
+\textbf{Enable Open vSwitch at boot time:}
+\begin{verbatim}
+root \$ chkconfig openvswitch on
+\end{verbatim}
+
+\noindent
+\textbf{Check if ovs command line tools are installed:}
+\begin{verbatim}
+root \$ ovs-vsctl --version
+ovs-vsctl (Open vSwitch) 2.5.2
+Compiled Apr 18 2017 00:21:19
+DB Schema 7.12.1
+\end{verbatim}
+
+\item \textbf{Configure using Script}
+
+Running the following command will install the OvS along with its required packages.
+\begin{verbatim}
+root \$ ovs_vcl.py --install-ovs   
+\end{verbatim}
+\noindent
+The script runs all the commands mentioned in section \ref{ovs_install} in the given order.
+\end{enumerate}
+
+
+\subsubsection{Configuring OvS for a single VCL Sandbox} \label{ovs_one_sandbox}
+
+\begin{enumerate}
+\item \textbf{Manual Configuration}
+
+\noindent
+\textbf{Destroy the old "private" and "nat" bridge networks:}
+\begin{verbatim}
+root \$ virsh net-destroy private
+root \$ virsh net-destroy nat
+\end{verbatim}
+
+\noindent
+\textbf{Undefine the old "private" and "nat" bridge networks:}
+\begin{verbatim}
+root \$ virsh net-undefine private
+root \$ virsh net-undefine nat
+\end{verbatim}
+
+\noindent
+\textbf{Create a new bridge for "private" network:}
+\begin{verbatim}
+root \$ ovs-vsctl add-br ovsbr0
+\end{verbatim}
+
+\noindent
+\textbf{Create a new bridge for "nat" network:}
+\begin{verbatim}
+root \$ ovs-vsctl add-br ovsbr1
+\end{verbatim}
+
+
+\noindent
+\textbf{Create a new OvS xml configuration file for "private" network:}
+\begin{verbatim}
+<network>
+  <name>private</name>
+  <forward mode='bridge'/>
+  <bridge name='ovsbr0'/>
+  <virtualport type='openvswitch'/>
+</network>
+\end{verbatim}
+
+\noindent
+\textbf{Create a new OvS xml configuration file for "nat" network:}
+\begin{verbatim}
+<network>
+  <name>nat</name>
+  <forward mode='bridge'/>
+  <bridge name='ovsbr1'/>
+  <virtualport type='openvswitch'/>
+</network>
+\end{verbatim}
+
+\noindent
+\textbf{Assign IP to bridge:}
+\begin{verbatim}
+root \$ ifconfig ovsbr0 192.168.100.10
+root \$ ifconfig ovsbr1 192.168.200.10
+\end{verbatim}
+
+\noindent
+\textbf{Define net "private" network:}
+\begin{verbatim}
+root \$ virsh net-define <private_ovs_configuration_file.xml>
+\end{verbatim}
+
+\noindent
+\textbf{Define net "nat" network:}
+\begin{verbatim}
+root \$ virsh net-define <nat_ovs_configuration_file.xml>
+\end{verbatim}
+
+\noindent
+\textbf{Start new "private" network:}
+\begin{verbatim}
+root \$ virsh net-start private
+\end{verbatim}
+
+
+\noindent
+\textbf{Start new "nat" network:}
+\begin{verbatim}
+root \$ virsh net-start nat
+\end{verbatim}
+
+
+\noindent
+\textbf{Enable new "private" network on startup:}
+\begin{verbatim}
+root \$ virsh net-autostart private
+\end{verbatim}
+
+\noindent
+\textbf{Enable new "nat" network on startup:}
+\begin{verbatim}
+root \$ virsh net-autostart nat
+\end{verbatim}
+
+\noindent
+\textbf{Define a new DHCP configuration for "nat" network}
+\begin{verbatim}
+root \$ cat >> /var/lib/libvirt/dnsmasq/nat.conf
+strict-order
+domain=nat
+expand-hosts
+pid-file=/var/lib/libvirt/network/nat.pid
+except-interface=lo
+bind-dynamic
+interface=ovsbr1
+dhcp-range=192.168.200.128,192.168.200.254
+dhcp-no-override
+dhcp-lease-max=127
+dhcp-hostsfile=/var/lib/libvirt/dnsmasq/nat.hostsfile
+addn-hosts=/var/lib/libvirt/dnsmasq/nat.addnhosts
+\end{verbatim}
+Assumptions:
+\begin{enumerate}
+\item The bridge(interface) associated with "nat" network is "ovsbr1".
+\item The DHCP range available is 192.168.200.128 to 192.168.200.254.
+\item The pid-file, dhcp-hostsfile and addn-hosts are defined at the path mentioned above.
+\end{enumerate}
+
+\noindent
+\textbf{Define a new DHCP configuration for "private" network.}
+\begin{verbatim}
+root \$ cat >> /var/lib/libvirt/dnsmasq/private.conf
+strict-order
+domain=private
+expand-hosts
+pid-file=/var/lib/libvirt/network/private.pid
+except-interface=lo
+bind-dynamic
+interface=ovsbr0
+dhcp-option=3
+dhcp-range=192.168.100.128,192.168.100.254
+dhcp-no-override
+dhcp-lease-max=127
+dhcp-hostsfile=/var/lib/libvirt/dnsmasq/private.hostsfile
+addn-hosts=/var/lib/libvirt/dnsmasq/private.addnhosts
+\end{verbatim}
+Assumptions:
+\begin{enumerate}
+\item The bridge(interface) associated with "private" network is "ovsbr0".
+\item The DHCP range available is 192.168.100.128 to 192.168.100.254.
+\item The pid-file, dhcp-hostsfile and addn-hosts are defined at the path mentioned above.
+\end{enumerate}
+
+\noindent
+\textbf{Define a new DHCP hostfile for "nat" network}
+\begin{verbatim}
+root \$ cat >> /var/lib/libvirt/dnsmasq/nat.hostsfile
+52:54:00:3d:85:f0,192.168.200.1
+\end{verbatim}
+
+\noindent
+\textbf{Define a new DHCP hostfile for "private" network}
+\begin{verbatim}
+root \$ cat >> /var/lib/libvirt/dnsmasq/private.hostsfile
+52:54:00:b8:33:d4,192.168.100.1
+52:54:00:ae:cf:00,192.168.100.101
+52:54:00:ae:cf:02,192.168.100.102
+52:54:00:ae:cf:04,192.168.100.103
+52:54:00:ae:cf:06,192.168.100.104
+\end{verbatim}
+
+\noindent
+\textbf{Define a new DHCP additional hosts file for "nat" network}
+\begin{verbatim}
+root \$ touch /var/lib/libvirt/dnsmasq/nat.addnhosts
+\end{verbatim}
+
+\noindent
+\textbf{Define a new DHCP additional hosts file for "private" network}
+\begin{verbatim}
+root \$ touch /var/lib/libvirt/dnsmasq/private.addnhosts
+\end{verbatim}
+
+
+\noindent
+\textbf{Load the DHCP configuration for "nat"network}
+\begin{verbatim}
+root \$ /sbin/dnsmasq --conf-file=/var/lib/libvirt/dnsmasq/nat.conf \
+--log-facility=/var/lib/libvirt/dnsmasq/nat.log
+\end{verbatim}
+
+\noindent
+\textbf{Load the DHCP configuration for "private"network}
+\begin{verbatim}
+root \$ /sbin/dnsmasq --conf-file=/var/lib/libvirt/dnsmasq/private.conf \
+--log-facility=/var/lib/libvirt/dnsmasq/private.log
+\end{verbatim}
+
+\end{enumerate}
+
+\subsubsection{Configuring VxLan tunnel} \label{vxlan_config}
+
+\begin{enumerate}
+
+
+\item \textbf{Setting up Private Tunnel}
+\noindent
+
+\textbf{Create a VTEP interface on OvS bridge for private tunnel on master}
+\begin{verbatim}
+ovs-vsctl add-port ovsbr0 tun0 --set interface tun0 type=vxlan \
+options:remote_ip=<slave_private_ip> options:key=123
+\end{verbatim}
+
+\noindent
+\textbf{Create a VTEP interface on OvS bridge for private tunnel on slave}
+\begin{verbatim}
+ovs-vsctl add-port ovsbr0 tun0 --set interface tun0 type=vxlan \
+options:remote_ip=<master_private_ip> options:key=123
+\end{verbatim}
+
+
+\item \textbf{Setting up Public("nat) Tunnel}
+\textbf{Create a VTEP interface on OvS bridge for public tunnel on master}
+\begin{verbatim}
+ovs-vsctl add-port ovsbr1 tun1 --set interface tun1 type=vxlan \
+options:remote_ip=<slave_public_ip> options:key=456
+\end{verbatim}
+
+\noindent
+\textbf{Create a VTEP interface on OvS bridge for public tunnel on slave}
+\begin{verbatim}
+ovs-vsctl add-port ovsbr1 tun1 --set interface tun1 type=vxlan \
+options:remote_ip=<master_public_ip> options:key=456
+\end{verbatim}
+
+\item \textbf{Add firewall rules for master sandbox}
+\noindent
+\begin{verbatim}
+iptables -I INPUT -s <slave_ip>/32 -p udp -m udp --dport <vxlan_port> -j ACCEPT
+\end{verbatim}
+
+\item \textbf{Add firewall rules for slave sandbox}
+\noindent
+\begin{verbatim}
+iptables -I INPUT -s <master_ip>/32 -p udp -m udp --dport <vxlan_port> -j ACCEPT
+\end{verbatim}
+
+\item \textbf{Change the MTU size for public and private interfaces and bridges in master and slave sandbox. Also, change it in any of the VMs (management node or others) which are provisioned}
+\begin{verbatim}
+ifconfig <interface> mtu 1400
+\end{verbatim}
+
+\end{enumerate}
+
+\subsubsection{Adding Virtual Host}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{add_computer}
+\caption{Add virtual host}
+\label{fig:vclvirtualhost}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{add_virtualhost}
+\caption{Add VMs to slave sandbox}
+\label{fig:vclvm}
+\end{figure}
+
+
 
 \end{document}
