@@ -5,7 +5,12 @@ import subprocess
 import os
 import argparse
 import sys
+remote_public = "152.46.17.251"
+remote_private = "10.25.5.41"
+is_master = True
 
+ovs_private_ip = "192.168.100.10"
+ovs_public_ip = "192.168.200.10"
 
 def install_ovs_required_packages():
 	
@@ -236,12 +241,32 @@ if __name__ == "__main__":
 
 	# Create ovs bridge network
 	create_ovs_network("private", "/etc/libvirt/qemu/networks/private.xml", \
-						"ovsbr0", "192.168.100.10")
+						"ovsbr0", ovs_private_ip)
 
 	create_ovs_network("nat", "/etc/libvirt/qemu/networks/nat.xml", \
-						"ovsbr1", "192.168.200.10")
+						"ovsbr1", ovs_public_ip)
 
 	change_firewall_rules("/etc/sysconfig/iptables")
 
-	configure_dhcp("private", "ovsbr0")
-	configure_dhcp("nat", "ovsbr1")
+	if is_master is True:
+		print "Configuring DHCP on Master"
+		configure_dhcp("private", "ovsbr0")
+		configure_dhcp("nat", "ovsbr1")
+	else:
+		print "Slave..Not configuring DHCP"
+
+	#def create_tunnel(remote_ip, tun_tap, bridge, key):
+	create_tunnel(remote_private, "tun0", "ovsbr0", "123")
+	create_tunnel(remote_public, "tun1", "ovsbr1", "456")
+
+	#def update_firewall_for_tunnel(remote_ip, port,protocol):
+	update_firewall_for_tunnel(remote_private, "4789", "udp")	
+	update_firewall_for_tunnel(remote_private, "4789", "tcp")	
+	update_firewall_for_tunnel(remote_public, "4789", "udp")	
+	update_firewall_for_tunnel(remote_public, "4789", "tcp")	
+
+	#def change_mtu_size(bridge, mtu_size):
+	change_mtu_size("ovsbr0", "1400")
+	change_mtu_size("ovsbr1", "1400")
+	
+	#def change_ssh_hostonly_config(bridge_ip):
