@@ -9,8 +9,12 @@ remote_public = "152.46.17.251"
 remote_private = "10.25.5.41"
 is_master = True
 
-ovs_private_ip = "192.168.100.10"
-ovs_public_ip = "192.168.200.10"
+if is_master is True:
+	ovs_private_ip = "192.168.100.10"
+	ovs_public_ip = "192.168.200.10"
+else:
+	ovs_private_ip = "192.168.100.11"
+	ovs_public_ip = "192.168.200.11"
 
 def install_ovs_required_packages():
 	
