@@ -202,6 +202,14 @@ def update_firewall_for_tunnel(remote_ip, port,protocol):
 								('%s/32' % remote_ip), '-p', protocol, \
 								'-m', protocol, '--dport', port, '-j', 'ACCEPT']
 	subprocess.call(cmd_add_firewall_rule_vxlan)
+	
+def update_firewall_for_port_redirection(src_ip, dest_ip,in_port, redirect_to_port,protocol):
+        cmd_add_firewall_rule_vxlan = ['iptables', '-t', 'nat', '-I', 'PREROUTING', '-s', ('%s/32' % src_ip),  \
+                                                                '-d', ('%s/32' % dest_ip),\
+                                                                '-p', protocol, \
+                                                                '-m', protocol, '--dport', in_port, '-j', 'REDIRECT',  '--to-ports', redirect_to_port]
+        subprocess.call(cmd_add_firewall_rule_vxlan)
+
 
 def change_mtu_size(bridge, mtu_size):
 	cmd_change_mtu_size = ['ifconfig', bridge, 'mtu', mtu_size]
@@ -263,6 +271,10 @@ if __name__ == "__main__":
 	create_tunnel(remote_private, "tun0", "ovsbr0", "123")
 	create_tunnel(remote_public, "tun1", "ovsbr1", "456")
 
+	#def update_firewall_for_port_redirection(src_ip, dest_ip,in_port, redirect_to_port,protocol):
+	if is_master is False:
+        	update_firewall_for_port_redirection("192.168.100.1", ovs_private_ip, "22", "24", "tcp")
+	
 	#def update_firewall_for_tunnel(remote_ip, port,protocol):
 	update_firewall_for_tunnel(remote_private, "4789", "udp")	
 	update_firewall_for_tunnel(remote_private, "4789", "tcp")	
