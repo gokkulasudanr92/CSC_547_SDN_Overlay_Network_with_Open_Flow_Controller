@@ -37,12 +37,33 @@ if __name__ == "__main__":
 	# mtu optional - default 1400
 	vx_parser = subparsers.add_parser("vxlan", help='Setup VxLan')
 
-	# argument definitions
+	# VCL sandbox argument definitions
 	sb_parser.add_argument("-d", "--default", help="Installs OvS and \
 						replaces private and nat networks with new OvS bridges.",
                     action="store_true")
 	sb_parser.add_argument("-i", "--install", help="Fetches required \
 									packages for OvS and installs it.", action="store_true")
 
+	sb_parser.add_argument("-t", "--type", help="Define sandbox type: master or slave, default: \'master\'", required=True)
+	sb_parser.add_argument("-pb", "--private-bridge", help="Define the bridge interface name, default: \'ovsbr0\'")
+	sb_parser.add_argument("-nb", "--nat-bridge", help="Define the bridge interface name \'ovsbr1\'")
+	sb_parser.add_argument("-pip", "--private-bridge_ip", help="Define the bridge ip, default: \'192.168.100.10\'")
+	sb_parser.add_argument("-nip", "--nat-bridge_ip", help="Define the bridge ip, default: \'192.168.200.10\'")
+
+	vx_parser.add_argument("-rip", "--remote-ip", help="Remote ip for VxLan tunnel endpoint", required=True)
+	vx_parser.add_argument("-b", "--bridge", help="bridge interface for tunnel", required=True)
+	vx_parser.add_argument("-t", "--tun", help="tun tap interface for tunnel", required=True)
+	vx_parser.add_argument("-k", "--key", help="key for the", required=True)
+
+	# Print help if no arguments are passed
+	if len(sys.argv)==1:
+	    parser.print_help()
+	    sb_parser.print_help()
+	
 	args = parser.parse_args()	        
 
+	if(args.type != 'master' or args.type != 'slave'):
+		print "Enter correct sandbox type : \'master\' or \'slave\'"
+		sb_parser.print_help()
+
+	# print args
