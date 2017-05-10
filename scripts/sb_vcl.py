@@ -257,7 +257,7 @@ if __name__ == "__main__":
 						PRIVATE_BRIDGE, PRIVATE_BRIDGE_IP)
 
 	setup_ovs_network(SB_TYPE, "nat", "/etc/libvirt/qemu/networks/nat.xml", \
-					NAT_BRIDGE_IP, NAT_BRIDGE_IP)
+					NAT_BRIDGE, NAT_BRIDGE_IP)
 
 	change_firewall_rules("/etc/sysconfig/iptables")
 	
