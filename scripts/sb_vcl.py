@@ -5,16 +5,6 @@ import subprocess
 import os
 import argparse
 import sys
-remote_public = "152.46.17.251"
-remote_private = "10.25.5.41"
-is_master = True
-
-if is_master is True:
-	ovs_private_ip = "192.168.100.10"
-	ovs_public_ip = "192.168.200.10"
-else:
-	ovs_private_ip = "192.168.100.11"
-	ovs_public_ip = "192.168.200.11"
 
 def install_ovs_required_packages():
 	
@@ -186,31 +176,6 @@ def configure_dhcp(network, bridge):
 	new_dhcp_addnhosts(network)
 	load_new_dhcp_config(network, bridge)
 
-# Source: http://costiser.ro/2016/07/07/overlay-tunneling-with-openvswitch-gre-vxlan-geneve-greoipsec/#.WPWEgVMrLwe
-def create_tunnel(remote_ip, tun_tap, bridge, key):
-	cmd_create_tunnel = ['ovs-vsctl', 'add-port', bridge, tun_tap, \
-						'--', 'set', 'interface', tun_tap, 'type=vxlan' , \
-						('options:remote_ip=%s' % remote_ip), ('options:key=%s' % key)]
-	subprocess.call(cmd_create_tunnel)
-
-def update_firewall_for_tunnel(remote_ip, port,protocol):
-	cmd_add_firewall_rule_vxlan = ['iptables', '-I', 'INPUT', '-s', \
-								('%s/32' % remote_ip), '-p', protocol, \
-								'-m', protocol, '--dport', port, '-j', 'ACCEPT']
-	subprocess.call(cmd_add_firewall_rule_vxlan)
-	
-def update_firewall_for_port_redirection(src_ip, dest_ip,in_port, redirect_to_port,protocol):
-        cmd_add_firewall_rule_vxlan = ['iptables', '-t', 'nat', '-I', 'PREROUTING', '-s', ('%s/32' % src_ip),  \
-                                                                '-d', ('%s/32' % dest_ip),\
-                                                                '-p', protocol, \
-                                                                '-m', protocol, '--dport', in_port, '-j', 'REDIRECT',  '--to-ports', redirect_to_port]
-        subprocess.call(cmd_add_firewall_rule_vxlan)
-
-
-def change_mtu_size(bridge, mtu_size):
-	cmd_change_mtu_size = ['ifconfig', bridge, 'mtu', mtu_size]
-	subprocess.call(cmd_change_mtu_size)
-
 def change_ssh_hostonly_config(bridge_ip):
 	cmd_change_ssh_hostonly_config = ['sed', '-i', ("'s/ListenAddress 192.168.100.10/ListenAddress %s/g'" % bridge_ip),\
 										'/etc/ssh/hostonly_sshd_config']
@@ -223,25 +188,17 @@ def change_ssh_hostonly_config(bridge_ip):
 
 def argument_parsing():
 	# Argument parsing
-	parser = argparse.ArgumentParser()
+	sb_parser = argparse.ArgumentParser()
 	# Version info
-	parser.add_argument("-v", "--version", help="version information of the script",
+	sb_parser.add_argument("-v", "--version", help="version information of the script",
                     action="store_true")
-
-	subparsers = parser.add_subparsers(help='<think of help text>')
-
-
-	sb_parser = subparsers.add_parser("sbvcl", help='VCL Sandbox', action="store_true")
 	
-	vx_parser = subparsers.add_parser("vxlan", help='Setup VxLan', action="store_true")
-
 	# VCL sandbox argument definitions
 	sb_parser.add_argument("-d", "--default", help="Installs OvS and \
 						replaces private and nat networks with new OvS bridges.",
                     action="store_true")
 	sb_parser.add_argument("-i", "--install", help="Fetches required \
 									packages for OvS and installs it.", action="store_true")
-	sb_parser.add_argument("-ni", "--no-install", help="Does not install ovs packages", action="store_true")
 
 	sb_parser.add_argument("-t", "--type", help="Define sandbox type: master or slave. default type: \'master\' \
 			default behavior: Installs OvS and replaces private and nat networks with new OvS bridges.", required=True)
@@ -250,18 +207,11 @@ def argument_parsing():
 	sb_parser.add_argument("-pip", "--private-bridge-ip", help="Define private bridge ip, default: \'192.168.100.10\'")
 	sb_parser.add_argument("-nip", "--nat-bridge-ip", help="Define nat bridge ip, default: \'192.168.200.10\'")
 
-	vx_parser.add_argument("-rip", "--remote-ip", help="Remote ip for VxLan tunnel endpoint", required=True)
-	vx_parser.add_argument("-b", "--bridge", help="bridge interface for tunnel", required=True)
-	vx_parser.add_argument("-t", "--tun", help="tun tap interface for tunnel", required=True)
-	vx_parser.add_argument("-k", "--key", help="key for the vxlan tunnel")
-
 	# Print help if no arguments are passed
 	if len(sys.argv)==1:
-	    parser.print_help()
 	    sb_parser.print_help()
-	    vx_parser.print_help()
 	
-	args = parser.parse_args()	        
+	args = sb_parser.parse_args()	        
 
 	if(args.type != 'master' and args.type != 'slave'):
 		print "Enter correct sandbox type : \'master\' or \'slave\'"
@@ -278,46 +228,36 @@ def setup_ovs_network(sb_type, network, xml_path, bridge, bridge_ip):
 	else:
 		print "Slave..Not configuring DHCP"
 
-
+	if(network == 'private' and bridge_ip != '192.168.100.10'):
+		change_ssh_hostonly_config(bridge_ip)
 
 if __name__ == "__main__":
 
 	args = argument_parsing()
 	print args
 
+	NAT_BRIDGE = args.nat_bridge or 'ovsbr1'
+	NAT_BRIDGE_IP = args.nat_bridge_ip or '192.168.200.10'
+	PRIVATE_BRIDGE = args.private_bridge or 'ovsbr0'
+	PRIVATE_BRIDGE_IP = args.private_bridge_ip or '192.168.100.10'
+
+	SB_TYPE = args.type or 'master'
+
+	print NAT_BRIDGE, NAT_BRIDGE_IP, PRIVATE_BRIDGE, PRIVATE_BRIDGE_IP, SB_TYPE
+
 	if(args.install):
 		install_ovs_required_packages()
 		add_new_user("ovs")
 		install_ovs_packages()
 
-	if(args.type == 'master' and args.default):
+	if(args.version):
+		print "Write version info"
 
-		setup_ovs_network(args.type, "private", "/etc/libvirt/qemu/networks/private.xml", \
-							"ovsbr0", ovs_private_ip)
+	setup_ovs_network(SB_TYPE, "private", "/etc/libvirt/qemu/networks/private.xml", \
+						PRIVATE_BRIDGE, PRIVATE_BRIDGE_IP)
 
-		setup_ovs_network(args.type, "nat", "/etc/libvirt/qemu/networks/nat.xml", \
-						"ovsbr1", ovs_public_ip)
+	setup_ovs_network(SB_TYPE, "nat", "/etc/libvirt/qemu/networks/nat.xml", \
+					NAT_BRIDGE_IP, NAT_BRIDGE_IP)
 
-		change_firewall_rules("/etc/sysconfig/iptables")
-
-		
-
-		#def create_tunnel(remote_ip, tun_tap, bridge, key):
-		create_tunnel(remote_private, "tun0", "ovsbr0", "123")
-		create_tunnel(remote_public, "tun1", "ovsbr1", "456")
-
-		#def update_firewall_for_port_redirection(src_ip, dest_ip,in_port, redirect_to_port,protocol):
-		if is_master is False:
-	        	update_firewall_for_port_redirection("192.168.100.1", ovs_private_ip, "22", "24", "tcp")
-		
-		#def update_firewall_for_tunnel(remote_ip, port,protocol):
-		update_firewall_for_tunnel(remote_private, "4789", "udp")	
-		update_firewall_for_tunnel(remote_private, "4789", "tcp")	
-		update_firewall_for_tunnel(remote_public, "4789", "udp")	
-		update_firewall_for_tunnel(remote_public, "4789", "tcp")	
-
-		#def change_mtu_size(bridge, mtu_size):
-		change_mtu_size("ovsbr0", "1400")
-		change_mtu_size("ovsbr1", "1400")
-		
-		#def change_ssh_hostonly_config(bridge_ip):
+	change_firewall_rules("/etc/sysconfig/iptables")
+	
